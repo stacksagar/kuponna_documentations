@@ -1,831 +1,861 @@
 # Kuponna API Documentation
 
-## Authentication API Endpoints
+## Table of Contents
 
-- [POST /api/auth/register](#post-apiauthregister)
-- [POST /api/auth/verify-email](#post-apiauthverify-email)
-- [POST /api/auth/resend-verification](#post-apiauthresend-verification)
-- [POST /api/auth/login](#post-apiauthlogin)
-- [POST /api/auth/refresh](#post-apiauthrefresh)
-- [POST /api/auth/logout](#post-apiauthlogout)
-- [POST /api/auth/forgot-password](#post-apiauthforgot-password)
-- [POST /api/auth/resend-reset-code](#post-apiauthresend-reset-code)
-- [POST /api/auth/verify-reset-token](#post-apiauthverify-reset-token)
-- [POST /api/auth/reset-password](#post-apiauthreset-password)
-- [POST /api/auth/change-password](#post-apiauthchange-password)
-- [POST /api/auth/resend-email-code](#post-apiauthresend-email-code)
-- [POST /api/auth/verify-email-code](#post-apiauthverify-email-code)
+- [Frontend Usage Guide](#frontend-usage-guide)
+- [Deals API](#deals-api)
+- [Deal Participants API](#deal-participants-api)
+- [Deal Images API](#deal-images-api)
+- [Orders API](#orders-api)
+- [Redemption Cards API](#redemption-cards-api)
+- [Refund Requests API](#refund-requests-api)
+- [Transactions API](#transactions-api)
+- [Messages API](#messages-api)
+- [Notifications API](#notifications-api)
+- [Delivery Tracking API](#delivery-tracking-api)
+- [Error Responses](#error-responses)
+- [Best Practices](#best-practices)
 
 ---
 
-## Authentication & Authorization Flow
+## Frontend Usage Guide
 
-### Overview
+**All examples use [axios](https://github.com/axios/axios). Install with:**
 
-The authentication system uses JWT (JSON Web Tokens) for secure authentication. The flow consists of the following steps:
+```bash
+npm install axios
+```
 
-1. **Registration** (`POST /api/auth/register`)
-   - Create a new user account. This is the first step for any new user.
-2. **Email Verification** (`POST /api/auth/verify-email`)
-   - Verify the user's email address using a code sent to their email. Required before login is allowed.
-3. **Resend Verification** (`POST /api/auth/resend-verification`)
-   - If the user did not receive or lost the verification code, this endpoint resends it.
-4. **Login** (`POST /api/auth/login`)
-   - Authenticate a user and receive a JWT token. Only possible after email verification.
-5. **Token Refresh** (`POST /api/auth/refresh`)
-   - Automatically refresh an expired JWT token to keep the user logged in without re-entering credentials.
-6. **Logout** (`POST /api/auth/logout`)
-   - Clear the authentication state and invalidate the user's session.
-7. **Forgot Password** (`POST /api/auth/forgot-password`)
-   - Initiate a password reset by sending a reset code to the user's email.
-8. **Resend Reset Code** (`POST /api/auth/resend-reset-code`)
-   - Resend the password reset code if the user did not receive it or it expired.
-9. **Verify Reset Token** (`POST /api/auth/verify-reset-token`)
-   - Verify the reset code sent to the user's email before allowing password reset.
-10. **Reset Password** (`POST /api/auth/reset-password`)
-    - Set a new password after verifying the reset code.
-11. **Change Password** (`POST /api/auth/change-password`)
-    - Change the password for a logged-in user (requires current password).
-12. **Resend Email Code (Alternative)** (`POST /api/auth/resend-email-code`)
-    - Resend the email verification code using the user's email (alternative to the authenticated resend).
-13. **Verify Email Code (Alternative)** (`POST /api/auth/verify-email-code`)
-    - Alternative way to verify email using both email and code (useful for mobile or custom flows).
+See [KUPONNA_AUTHENTICATION_DOCUMENTATION.md] for authentication flows (login, registration, etc.).
 
-### Token Management
+- All requests (except public GETs) require authentication (JWT cookie/session).
+- Use plural endpoints for lists: `/api/deals`, `/api/orders`, etc.
+- Use singular endpoints for single items: `/api/deals?dealId=...`, `/api/orders?orderId=...`, etc.
+- Use query params to filter: `/api/orders?userId=...&dealId=...`
+- Use the correct HTTP method: GET (read), POST (create), PUT (update), DELETE (remove).
+- All responses are JSON.
 
-- Tokens are stored in HTTP-only cookies for security
-- Tokens expire after 24 hours
-- Refresh tokens are handled automatically
-- All tokens are signed with HS256 algorithm
+**See each API section below for detailed request/response schemas and code examples.**
 
-### Security Features
+---
 
-- HTTP-only cookies prevent XSS attacks
-- Secure flag in production
-- Strict same-site policy
-- Password hashing with bcrypt
-- CSRF protection
-- Rate limiting on auth endpoints
+# Deals API
 
-## Authentication Endpoints
+## Overview
 
-### POST /api/auth/register
+- **Purpose:** Manage group deals (create, update, list, delete)
+- **Who can use:**
+  - `GET`: Anyone (public)
+  - `POST`, `PUT`, `DELETE`: Merchants (authenticated)
 
-Register a new user account.
+## Endpoints
 
-#### Request Body
+- `GET /api/deals` — List all deals (with optional filters)
+- `GET /api/deals?dealId=...` — Get a single deal by ID
+- `POST /api/deals` — Create a new deal (merchant only)
+- `PUT /api/deals?dealId=...` — Update a deal (merchant only, own deals)
+- `DELETE /api/deals?dealId=...` — Delete a deal (merchant only, own deals)
 
-```typescript
+## Query Parameters
+
+| Name       | Type   | Required | Description             |
+| ---------- | ------ | -------- | ----------------------- |
+| dealId     | string | No       | Get a single deal by ID |
+| merchantId | string | No       | Filter by merchant      |
+| status     | string | No       | Filter by deal status   |
+| type       | string | No       | Filter by deal type     |
+
+## Request Body (POST/PUT)
+
+| Field           | Type   | Required | Validation/Description      |
+| --------------- | ------ | -------- | --------------------------- |
+| title           | string | Yes      | Min 2 chars                 |
+| description     | string | Yes      | Min 10 chars                |
+| type            | string | Yes      | Enum: 'physical', 'digital' |
+| originalPrice   | number | Yes      | > 0                         |
+| discountedPrice | number | Yes      | > 0, < originalPrice        |
+| minGroupSize    | number | Yes      | >= 2                        |
+| maxGroupSize    | number | No       | >= minGroupSize             |
+| startDate       | string | Yes      | ISO 8601 date               |
+| endDate         | string | Yes      | ISO 8601 date               |
+| images          | array  | No       | Array of image URLs         |
+| location        | string | No       |                             |
+
+## Response (GET all)
+
+```json
 {
-  email: string;      // Required, valid email format
-  password: string;   // Required, min 8 characters
-  firstName: string;  // Required, min 2 characters
-  lastName: string;   // Required, min 2 characters
-  role: string;      // Required, enum: ['user', 'merchant']
-  phoneNumber?: string; // Optional, phone number
+  "items": [
+    {
+      "id": "string",
+      "merchantId": "string",
+      "title": "string",
+      "description": "string",
+      "type": "physical|digital",
+      "originalPrice": 100,
+      "discountedPrice": 80,
+      "minGroupSize": 5,
+      "maxGroupSize": 10,
+      "currentGroupSize": 2,
+      "startDate": "2024-06-01T00:00:00Z",
+      "endDate": "2024-06-30T23:59:59Z",
+      "status": "draft|pending_approval|active|completed|cancelled",
+      "images": ["url1", "url2"],
+      "location": "string",
+      "createdAt": "2024-05-01T12:00:00Z",
+      "updatedAt": "2024-05-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-#### Response 201 (application/json)
+## Response (GET by ID)
 
-```typescript
+```json
 {
-  message: string;    // Required, "User registered successfully"
-  user: {
-    id: string;        // Required, UUID v4 format
-    email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
-    role: string;      // Required, enum: ['user', 'merchant']
-    phoneNumber?: string; // Optional, phone number
-    isVerified: boolean;  // Required, default: false
-    lastLogin: string | null; // Optional, ISO 8601 datetime format
-    createdAt: string; // Required, ISO 8601 datetime format
-    updatedAt: string; // Required, ISO 8601 datetime format
+  "item": {
+    "id": "string",
+    "merchantId": "string",
+    ... // same as above
   }
 }
 ```
 
-[Back to top](#authentication-api-endpoints)
+## Example: Fetching All Deals
 
-### POST /api/auth/verify-email
+```js
+import axios from "axios";
 
-Verify a user's email address using the verification code.
-
-#### Request Headers
-
-```typescript
-{
-  Cookie: string; // Required, contains httpOnly JWT token
+async function getAllDeals() {
+  const res = await axios.get("/api/deals", { withCredentials: true });
+  console.log(res.data.items); // Array of deals
 }
 ```
 
-#### Request Body
+## Example: Creating a Deal
 
-```typescript
-{
-  code: string; // Required, 6-character verification code
+```js
+import axios from "axios";
+
+async function createDeal() {
+  const res = await axios.post(
+    "/api/deals",
+    {
+      title: "New Deal",
+      description: "Great offer",
+      type: "physical",
+      originalPrice: 100,
+      discountedPrice: 80,
+      minGroupSize: 5,
+      startDate: "2024-06-01T00:00:00Z",
+      endDate: "2024-06-30T23:59:59Z",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Deal Participants API
+
+## Overview
+
+- **Purpose:** Join, leave, and manage deal participation
+- **Who can use:**
+  - `GET`: Authenticated users (filter by dealId, userId, etc.)
+  - `POST`, `PUT`, `DELETE`: Users (authenticated)
+
+## Endpoints
+
+- `GET /api/deal-participants` — List participants (with filters)
+- `GET /api/deal-participants?dealParticipantId=...` — Get a single participant
+- `POST /api/deal-participants` — Join a deal
+- `PUT /api/deal-participants?dealParticipantId=...` — Update participant status
+- `DELETE /api/deal-participants?dealParticipantId=...` — Leave a deal
+
+## Query Parameters
+
+| Name              | Type   | Required | Description              |
+| ----------------- | ------ | -------- | ------------------------ |
+| dealParticipantId | string | No       | Get a single participant |
+| dealId            | string | No       | Filter by deal           |
+| userId            | string | No       | Filter by user           |
+| status            | string | No       | Filter by status         |
+
+## Request Body (POST)
+
+| Field         | Type   | Required | Description   |
+| ------------- | ------ | -------- | ------------- |
+| dealId        | string | Yes      | Deal to join  |
+| paymentAmount | number | Yes      | Amount to pay |
+
+## Response (GET all)
+
+```json
 {
-  message: string;   // Required, "Email verified successfully"
-  user: {
-    id: string;        // Required, UUID v4 format
-    email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
-    role: string;      // Required, enum: ['user', 'merchant']
-    phoneNumber?: string; // Optional, phone number
-    isVerified: boolean;  // Required, true
-    lastLogin: string | null; // Optional, ISO 8601 datetime format
-    createdAt: string; // Required, ISO 8601 datetime format
-    updatedAt: string; // Required, ISO 8601 datetime format
-  }
+  "items": [
+    {
+      "id": "string",
+      "userId": "string",
+      "dealId": "string",
+      "status": "pending|paid|completed|cancelled|refunded",
+      "paymentId": "string|null",
+      "paymentAmount": 80,
+      "joinedAt": "2024-06-01T12:00:00Z",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-[Back to top](#authentication-api-endpoints)
+## Example: Joining a Deal
 
-### POST /api/auth/resend-verification
+```js
+import axios from "axios";
 
-Resend the verification email to the user.
-
-#### Request Headers
-
-```typescript
-{
-  Cookie: string; // Required, contains httpOnly JWT token
+async function joinDeal() {
+  const res = await axios.post(
+    "/api/deal-participants",
+    { dealId: "123", paymentAmount: 80 },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Deal Images API
+
+## Overview
+
+- **Purpose:** Manage images for deals
+- **Who can use:**
+  - `GET`: Authenticated users (filter by dealId, etc.)
+  - `POST`, `DELETE`: Merchants (authenticated, own deals)
+
+## Endpoints
+
+- `GET /api/deal-images` — List images (with filters)
+- `GET /api/deal-images?dealImageId=...` — Get a single image
+- `POST /api/deal-images` — Add image to a deal
+- `DELETE /api/deal-images?dealImageId=...` — Remove image
+
+## Query Parameters
+
+| Name        | Type   | Required | Description        |
+| ----------- | ------ | -------- | ------------------ |
+| dealImageId | string | No       | Get a single image |
+| dealId      | string | No       | Filter by deal     |
+
+## Request Body (POST)
+
+| Field  | Type   | Required | Description          |
+| ------ | ------ | -------- | -------------------- |
+| dealId | string | Yes      | Deal to add image to |
+| url    | string | Yes      | Image URL            |
+
+## Response (GET all)
+
+```json
 {
-  message: string; // Required, "Verification email sent successfully"
+  "items": [
+    {
+      "id": "string",
+      "dealId": "string",
+      "url": "string",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-### POST /api/auth/login
+## Example: Adding an Image
 
-Authenticate a user and receive an access token.
+```js
+import axios from "axios";
 
-#### Request Body
-
-```typescript
-{
-  email: string; // Required, valid email format
-  password: string; // Required, min 8 characters
+async function addDealImage() {
+  const res = await axios.post(
+    "/api/deal-images",
+    { dealId: "123", url: "https://example.com/image.jpg" },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Orders API
+
+## Overview
+
+- **Purpose:** Manage orders for deals
+- **Who can use:**
+  - `GET`: Authenticated users/merchants (own orders)
+  - `POST`: Users (authenticated)
+  - `PUT`, `DELETE`: Users (own orders), merchants (own deals)
+
+## Endpoints
+
+- `GET /api/orders` — List orders (with filters)
+- `GET /api/orders?orderId=...` — Get a single order
+- `POST /api/orders` — Create order (user only)
+- `PUT /api/orders?orderId=...` — Update order (user/merchant, own)
+- `DELETE /api/orders?orderId=...` — Cancel order (user only, own)
+
+## Query Parameters
+
+| Name    | Type   | Required | Description        |
+| ------- | ------ | -------- | ------------------ |
+| orderId | string | No       | Get a single order |
+| userId  | string | No       | Filter by user     |
+| dealId  | string | No       | Filter by deal     |
+
+## Request Body (POST)
+
+| Field         | Type   | Required | Description             |
+| ------------- | ------ | -------- | ----------------------- |
+| dealId        | string | Yes      | Deal to order           |
+| amount        | number | Yes      | Order amount            |
+| type          | string | Yes      | 'physical' or 'digital' |
+| paymentMethod | string | No       | e.g., 'card', 'wallet'  |
+
+## Response (GET all)
+
+```json
 {
-  message: string;   // Required, "Login successful"
-  user: {
-    id: string;        // Required, UUID v4 format
-    email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
-    role: string;      // Required, enum: ['user', 'merchant']
-    phoneNumber?: string; // Optional, phone number
-    isVerified: boolean;  // Required
-    lastLogin: string; // Required, ISO 8601 datetime format
-    createdAt: string; // Required, ISO 8601 datetime format
-    updatedAt: string; // Required, ISO 8601 datetime format
-  }
+  "items": [
+    {
+      "id": "string",
+      "dealId": "string",
+      "userId": "string",
+      "status": "pending|paid|shipped|delivered|cancelled|refunded",
+      "type": "physical|digital",
+      "amount": 80,
+      "paymentMethod": "string|null",
+      "paidAt": "2024-06-01T12:00:00Z|null",
+      "shippedAt": "2024-06-02T12:00:00Z|null",
+      "deliveredAt": "2024-06-03T12:00:00Z|null",
+      "cancelledAt": "2024-06-04T12:00:00Z|null",
+      "refundedAt": "2024-06-05T12:00:00Z|null",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-[Back to top](#authentication-api-endpoints)
+## Example: Creating an Order
 
-### POST /api/auth/refresh
+```js
+import axios from "axios";
 
-Refresh an expired access token.
-
-#### Request Headers
-
-```typescript
-{
-  Cookie: string; // Required, contains httpOnly JWT token
+async function createOrder() {
+  const res = await axios.post(
+    "/api/orders",
+    { dealId: "123", amount: 80, type: "physical" },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Redemption Cards API
+
+## Overview
+
+- **Purpose:** Manage redemption cards for orders (digital/physical delivery)
+- **Who can use:**
+  - `GET`: Users (own), merchants (own), admins (all)
+  - `POST`, `PUT`, `DELETE`: Merchants (own), admins (all)
+
+## Endpoints
+
+- `GET /api/redemption-cards` — List redemption cards (with filters)
+- `GET /api/redemption-cards?redemptionCardId=...` — Get a single redemption card
+- `POST /api/redemption-cards` — Create redemption card (merchant/admin only)
+- `PUT /api/redemption-cards?redemptionCardId=...` — Update redemption card (merchant/admin only)
+- `DELETE /api/redemption-cards?redemptionCardId=...` — Delete redemption card (merchant/admin only)
+
+## Query Parameters
+
+| Name             | Type   | Required | Description                  |
+| ---------------- | ------ | -------- | ---------------------------- |
+| redemptionCardId | string | No       | Get a single redemption card |
+| orderId          | string | No       | Filter by order              |
+| userId           | string | No       | Filter by user               |
+| status           | string | No       | Filter by status             |
+
+## Request Body (POST)
+
+| Field              | Type   | Required | Description                                                     |
+| ------------------ | ------ | -------- | --------------------------------------------------------------- |
+| orderId            | string | Yes      | Order for the card                                              |
+| userId             | string | Yes      | User receiving the card                                         |
+| code               | string | Yes      | Unique redemption code                                          |
+| status             | string | No       | Enum: 'pending', 'shipped', 'delivered', 'activated', 'expired' |
+| deliveryTrackingId | string | No       | Delivery tracking reference                                     |
+
+## Response (GET all)
+
+```json
 {
-  message: string;   // Required, "Token refreshed successfully"
-  user: {
-    id: string;        // Required, UUID v4 format
-    email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
-    role: string;      // Required, enum: ['user', 'merchant']
-    phoneNumber?: string; // Optional, phone number
-    isVerified: boolean;  // Required
-    lastLogin: string; // Required, ISO 8601 datetime format
-    createdAt: string; // Required, ISO 8601 datetime format
-    updatedAt: string; // Required, ISO 8601 datetime format
-  }
+  "items": [
+    {
+      "id": "string",
+      "orderId": "string",
+      "userId": "string",
+      "code": "string",
+      "status": "pending|shipped|delivered|activated|expired",
+      "deliveryTrackingId": "string|null",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-[Back to top](#authentication-api-endpoints)
+## Example: Creating a Redemption Card
 
-### POST /api/auth/logout
+```js
+import axios from "axios";
 
-Logout the current user and invalidate their token.
-
-#### Request Headers
-
-```typescript
-{
-  Cookie: string; // Required, contains httpOnly JWT token
+async function createRedemptionCard() {
+  const res = await axios.post(
+    "/api/redemption-cards",
+    {
+      orderId: "123",
+      userId: "456",
+      code: "ABCDEF123",
+      status: "pending",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Refund Requests API
+
+## Overview
+
+- **Purpose:** Manage refund requests for orders
+- **Who can use:**
+  - `GET`: Users (own), merchants (own), admins (all)
+  - `POST`: Users (own)
+  - `PUT`: Merchants (own), admins (all)
+  - `DELETE`: Admins (all)
+
+## Endpoints
+
+- `GET /api/refund-requests` — List refund requests (with filters)
+- `GET /api/refund-requests?refundRequestId=...` — Get a single refund request
+- `POST /api/refund-requests` — Create refund request (user only)
+- `PUT /api/refund-requests?refundRequestId=...` — Update refund request (merchant/admin only)
+- `DELETE /api/refund-requests?refundRequestId=...` — Delete refund request (admin only)
+
+## Query Parameters
+
+| Name            | Type   | Required | Description                 |
+| --------------- | ------ | -------- | --------------------------- |
+| refundRequestId | string | No       | Get a single refund request |
+| orderId         | string | No       | Filter by order             |
+| userId          | string | No       | Filter by user              |
+| status          | string | No       | Filter by status            |
+
+## Request Body (POST)
+
+| Field   | Type   | Required | Description       |
+| ------- | ------ | -------- | ----------------- |
+| orderId | string | Yes      | Order to refund   |
+| reason  | string | Yes      | Reason for refund |
+
+## Response (GET all)
+
+```json
 {
-  message: string; // Required, "Logged out successfully"
+  "items": [
+    {
+      "id": "string",
+      "userId": "string",
+      "orderId": "string",
+      "reason": "string",
+      "status": "pending|approved|rejected",
+      "adminId": "string|null",
+      "processedAt": "2024-06-01T12:00:00Z|null",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-[Back to top](#authentication-api-endpoints)
+## Example: Creating a Refund Request
 
-### POST /api/auth/forgot-password
+```js
+import axios from "axios";
 
-Request a password reset by sending an OTP to the user's email.
-
-#### Request Body
-
-```typescript
-{
-  email: string; // Required, valid email format
+async function createRefundRequest() {
+  const res = await axios.post(
+    "/api/refund-requests",
+    {
+      orderId: "123",
+      reason: "Product was damaged",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Transactions API
+
+## Overview
+
+- **Purpose:** Manage payment, payout, and refund transactions
+- **Who can use:**
+  - `GET`: Users (own), merchants (own), admins (all)
+  - `POST`, `PUT`, `DELETE`: Admins (all)
+
+## Endpoints
+
+- `GET /api/transactions` — List transactions (with filters)
+- `GET /api/transactions?transactionId=...` — Get a single transaction
+- `POST /api/transactions` — Create transaction (admin only)
+- `PUT /api/transactions?transactionId=...` — Update transaction (admin only)
+- `DELETE /api/transactions?transactionId=...` — Delete transaction (admin only)
+
+## Query Parameters
+
+| Name          | Type   | Required | Description              |
+| ------------- | ------ | -------- | ------------------------ |
+| transactionId | string | No       | Get a single transaction |
+| userId        | string | No       | Filter by user           |
+| orderId       | string | No       | Filter by order          |
+| type          | string | No       | Filter by type           |
+| status        | string | No       | Filter by status         |
+
+## Request Body (POST)
+
+| Field           | Type   | Required | Description                            |
+| --------------- | ------ | -------- | -------------------------------------- |
+| userId          | string | Yes      | User for the transaction               |
+| orderId         | string | No       | Order for the transaction              |
+| amount          | number | Yes      | Transaction amount                     |
+| type            | string | Yes      | Enum: 'payment', 'payout', 'refund'    |
+| status          | string | No       | Enum: 'pending', 'completed', 'failed' |
+| paymentMethod   | string | No       | e.g., 'card', 'wallet'                 |
+| transactionDate | string | No       | ISO 8601 date                          |
+
+## Response (GET all)
+
+```json
 {
-  message: string; // Required, "Password reset instructions sent to your email"
+  "items": [
+    {
+      "id": "string",
+      "userId": "string",
+      "orderId": "string|null",
+      "amount": 80,
+      "type": "payment|payout|refund",
+      "status": "pending|completed|failed",
+      "paymentMethod": "string|null",
+      "transactionDate": "2024-06-01T12:00:00Z",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-### POST /api/auth/resend-reset-code
+## Example: Creating a Transaction (Admin Only)
 
-Resend the password reset OTP code.
+```js
+import axios from "axios";
 
-#### Request Body
-
-```typescript
-{
-  email: string; // Required, valid email format
+async function createTransaction() {
+  const res = await axios.post(
+    "/api/transactions",
+    {
+      userId: "123",
+      orderId: "456",
+      amount: 80,
+      type: "payment",
+      status: "pending",
+      paymentMethod: "card",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Messages API
+
+## Overview
+
+- **Purpose:** Send and manage messages between users, merchants, and admins
+- **Who can use:**
+  - `GET`: Users/merchants (own), admins (all)
+  - `POST`: Users/merchants (own)
+  - `PUT`, `DELETE`: Sender only
+
+## Endpoints
+
+- `GET /api/messages` — List messages (with filters)
+- `GET /api/messages?messageId=...` — Get a single message
+- `POST /api/messages` — Send a message
+- `PUT /api/messages?messageId=...` — Update a message (sender only)
+- `DELETE /api/messages?messageId=...` — Delete a message (sender only)
+
+## Query Parameters
+
+| Name       | Type   | Required | Description          |
+| ---------- | ------ | -------- | -------------------- |
+| messageId  | string | No       | Get a single message |
+| senderId   | string | No       | Filter by sender     |
+| receiverId | string | No       | Filter by receiver   |
+| orderId    | string | No       | Filter by order      |
+| dealId     | string | No       | Filter by deal       |
+| type       | string | No       | Filter by type       |
+| status     | string | No       | Filter by status     |
+
+## Request Body (POST)
+
+| Field      | Type   | Required | Description                                           |
+| ---------- | ------ | -------- | ----------------------------------------------------- |
+| receiverId | string | Yes      | Receiver of the message                               |
+| orderId    | string | No       | Related order                                         |
+| dealId     | string | No       | Related deal                                          |
+| content    | string | Yes      | Message content                                       |
+| type       | string | Yes      | Enum: 'user-merchant', 'user-admin', 'merchant-admin' |
+
+## Response (GET all)
+
+```json
 {
-  message: string; // Required, "Reset code sent successfully"
+  "items": [
+    {
+      "id": "string",
+      "senderId": "string",
+      "receiverId": "string",
+      "orderId": "string|null",
+      "dealId": "string|null",
+      "content": "string",
+      "type": "user-merchant|user-admin|merchant-admin",
+      "status": "sent|read",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-### POST /api/auth/verify-reset-token
+## Example: Sending a Message
 
-Verify the OTP token sent to the user's email.
+```js
+import axios from "axios";
 
-#### Request Body
-
-```typescript
-{
-  email: string; // Required, valid email format
-  token: string; // Required, 6-character OTP code
+async function sendMessage() {
+  const res = await axios.post(
+    "/api/messages",
+    {
+      receiverId: "456",
+      content: "Hello!",
+      type: "user-merchant",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Response 200 (application/json)
+---
 
-```typescript
+# Notifications API
+
+## Overview
+
+- **Purpose:** Manage notifications for users and merchants
+- **Who can use:**
+  - `GET`: Users/merchants (own), admins (all)
+  - `POST`: Admins (all)
+  - `PUT`, `DELETE`: Recipient only
+
+## Endpoints
+
+- `GET /api/notifications` — List notifications (with filters)
+- `GET /api/notifications?notificationId=...` — Get a single notification
+- `POST /api/notifications` — Create notification (admin only)
+- `PUT /api/notifications?notificationId=...` — Update notification (recipient only)
+- `DELETE /api/notifications?notificationId=...` — Delete notification (recipient only)
+
+## Query Parameters
+
+| Name           | Type   | Required | Description               |
+| -------------- | ------ | -------- | ------------------------- |
+| notificationId | string | No       | Get a single notification |
+| userId         | string | No       | Filter by user            |
+| type           | string | No       | Filter by type            |
+| read           | bool   | No       | Filter by read/unread     |
+
+## Request Body (POST)
+
+| Field   | Type   | Required | Description                                            |
+| ------- | ------ | -------- | ------------------------------------------------------ |
+| userId  | string | Yes      | Recipient of the notification                          |
+| type    | string | Yes      | Enum: 'system', 'deal', 'order', 'refund', 'complaint' |
+| title   | string | Yes      | Notification title                                     |
+| message | string | Yes      | Notification message                                   |
+
+## Response (GET all)
+
+```json
 {
-  message: string; // Required, "Token verified successfully"
-  resetToken: string; // Required, JWT token for password reset
+  "items": [
+    {
+      "id": "string",
+      "userId": "string",
+      "type": "system|deal|order|refund|complaint",
+      "title": "string",
+      "message": "string",
+      "read": false,
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-### POST /api/auth/reset-password
+## Example: Creating a Notification (Admin Only)
 
-Reset the user's password using the verified OTP token.
+```js
+import axios from "axios";
 
-#### Request Headers
-
-```typescript
-{
-  Authorization: string; // Required, Bearer token from verify-reset-token
+async function createNotification() {
+  const res = await axios.post(
+    "/api/notifications",
+    {
+      userId: "123",
+      type: "order",
+      title: "Order Update",
+      message: "Your order has shipped.",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-#### Request Body
+---
 
-```typescript
+# Delivery Tracking API
+
+## Overview
+
+- **Purpose:** Track delivery status for orders
+- **Who can use:**
+  - `GET`: Users (own), merchants (own), admins (all)
+  - `POST`, `PUT`: Merchants (own), admins (all)
+  - `DELETE`: Admins (all)
+
+## Endpoints
+
+- `GET /api/delivery-tracking` — List delivery tracking records (with filters)
+- `GET /api/delivery-tracking?deliveryTrackingId=...` — Get a single delivery tracking record
+- `POST /api/delivery-tracking` — Create delivery tracking (merchant/admin only)
+- `PUT /api/delivery-tracking?deliveryTrackingId=...` — Update delivery tracking (merchant/admin only)
+- `DELETE /api/delivery-tracking?deliveryTrackingId=...` — Delete delivery tracking (admin only)
+
+## Query Parameters
+
+| Name               | Type   | Required | Description                  |
+| ------------------ | ------ | -------- | ---------------------------- |
+| deliveryTrackingId | string | No       | Get a single tracking record |
+| orderId            | string | No       | Filter by order              |
+| status             | string | No       | Filter by status             |
+
+## Request Body (POST)
+
+| Field          | Type   | Required | Description                                                     |
+| -------------- | ------ | -------- | --------------------------------------------------------------- |
+| orderId        | string | Yes      | Order to track                                                  |
+| trackingNumber | string | Yes      | Tracking number                                                 |
+| carrier        | string | No       | Carrier name                                                    |
+| status         | string | No       | Enum: 'pending', 'shipped', 'in_transit', 'delivered', 'failed' |
+
+## Response (GET all)
+
+```json
 {
-  email: string; // Required, valid email format
-  token: string; // Required, 6-character OTP code
-  newPassword: string; // Required, min 8 characters
+  "items": [
+    {
+      "id": "string",
+      "orderId": "string",
+      "trackingNumber": "string",
+      "carrier": "string|null",
+      "status": "pending|shipped|in_transit|delivered|failed",
+      "updatedAt": "2024-06-01T12:00:00Z",
+      "createdAt": "2024-06-01T12:00:00Z"
+    }
+  ]
 }
 ```
 
-#### Response 200 (application/json)
+## Example: Creating a Delivery Tracking Record
 
-```typescript
-{
-  message: string; // Required, "Password reset successfully"
+```js
+import axios from "axios";
+
+async function createDeliveryTracking() {
+  const res = await axios.post(
+    "/api/delivery-tracking",
+    {
+      orderId: "123",
+      trackingNumber: "TRACK123",
+      carrier: "DHL",
+      status: "shipped",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
 }
 ```
 
-### POST /api/auth/change-password
+---
 
-Change the user's password while logged in.
-
-#### Request Headers
-
-```typescript
-{
-  Cookie: string; // Required, contains httpOnly JWT token
-}
-```
-
-#### Request Body
-
-```typescript
-{
-  currentPassword: string; // Required, current password
-  newPassword: string; // Required, new password
-}
-```
-
-#### Response 200 (application/json)
-
-```typescript
-{
-  message: string; // Required, "Password changed successfully"
-}
-```
-
-### POST /api/auth/resend-email-code
-
-Resend the email verification code to the user.
-
-#### Request Body
-
-```typescript
-{
-  email: string; // Required, valid email format
-}
-```
-
-#### Response 200 (application/json)
-
-```typescript
-{
-  message: string; // Required, "Verification code sent successfully"
-}
-```
-
-### POST /api/auth/verify-email-code
-
-Verify a user's email address using the verification code.
-
-#### Request Body
-
-```typescript
-{
-  email: string; // Required, valid email format
-  code: string; // Required, 6-character verification code
-}
-```
-
-#### Response 200 (application/json)
-
-```typescript
-{
-  message: string;   // Required, "Email verified successfully"
-  user: {
-    id: string;        // Required, UUID v4 format
-    email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
-    role: string;      // Required, enum: ['user', 'merchant']
-    phoneNumber?: string; // Optional, phone number
-    isVerified: boolean;  // Required, true
-    lastLogin: string | null; // Optional, ISO 8601 datetime format
-    createdAt: string; // Required, ISO 8601 datetime format
-    updatedAt: string; // Required, ISO 8601 datetime format
-  }
-}
-```
-
-## Error Responses
+# Error Responses
 
 All endpoints may return the following error responses:
 
-### 400 Bad Request
-
-```typescript
-{
-  error: string;     // Required, error message (e.g., "Invalid input", "User already exists")
-  details?: {        // Optional, present for validation errors
-    field: string;   // Field name
-    message: string; // Validation error message
-  }[];
-}
-```
-
-### 401 Unauthorized
-
-```typescript
-{
-  error: string; // Required, error message (e.g., "Invalid credentials")
-}
-```
-
-### 500 Internal Server Error
-
-```typescript
-{
-  error: string; // Required, "Internal server error"
-}
-```
-
-### 403 Forbidden
-
-```typescript
-{
-  error: string; // Required, error message (e.g., "Email already verified", "Invalid verification code")
-}
-```
-
-### 429 Too Many Requests
-
-```typescript
-{
-  error: string; // Required, error message (e.g., "Too many verification attempts. Please try again later")
-}
-```
-
-## Best Practices
-
-1. Use TypeScript for type safety
-2. Implement proper validation
-3. Implement email verification
-4. Set verification code expiration
-
-## Security Considerations
-
-1. Tokens are stored in HTTP-only cookies
-2. Passwords are hashed using bcrypt
-3. Input validation is performed
-4. Proper error handling is implemented
-5. Secure headers are set
-6. Proper logging is implemented
-7. Email verification is required
-8. Verification codes expire after 30 minutes
-
-## Deals Endpoints
-
-#### Create Deal (Merchant/Admin Only)
-
-```http
-POST /deals
-```
-
-Request Body:
-
-```json
-{
-  "title": "string (min 5 characters)",
-  "description": "string (min 20 characters)",
-  "type": "physical" | "digital",
-  "originalPrice": "number",
-  "discountedPrice": "number",
-  "minGroupSize": "number (min 2)",
-  "maxGroupSize": "number (min 2) | null",
-  "startDate": "ISO datetime string",
-  "endDate": "ISO datetime string",
-  "images": "string[]",
-  "location": "string | null"
-}
-```
-
-Response (201):
-
-```json
-{
-  "id": "uuid",
-  "title": "string",
-  "description": "string",
-  "type": "string",
-  "originalPrice": "number",
-  "discountedPrice": "number",
-  "minGroupSize": "number",
-  "maxGroupSize": "number",
-  "currentGroupSize": "number",
-  "status": "pending_approval",
-  "startDate": "string",
-  "endDate": "string",
-  "images": "string[]",
-  "location": "string"
-}
-```
-
-#### List Deals
-
-```http
-GET /deals
-```
-
-Query Parameters:
-
-- status: DealStatus (optional)
-- type: DealType (optional)
-- merchantId: string (optional)
-
-Response (200):
-
-```json
-[
-  {
-    "id": "uuid",
-    "title": "string",
-    "description": "string",
-    "type": "string",
-    "originalPrice": "number",
-    "discountedPrice": "number",
-    "minGroupSize": "number",
-    "maxGroupSize": "number",
-    "currentGroupSize": "number",
-    "status": "string",
-    "startDate": "string",
-    "endDate": "string",
-    "images": "string[]",
-    "location": "string"
-  }
-]
-```
-
-#### Join Deal (User Only)
-
-```http
-POST /deals/{dealId}/join
-```
-
-Response (200):
-
-```json
-{
-  "message": "Successfully joined the deal",
-  "participant": {
-    "id": "uuid",
-    "userId": "uuid",
-    "dealId": "uuid",
-    "status": "pending",
-    "paymentAmount": "number",
-    "joinedAt": "string"
-  }
-}
-```
-
-#### Leave Deal (User Only)
-
-```http
-DELETE /deals/{dealId}/join
-```
-
-Response (200):
-
-```json
-{
-  "message": "Successfully left the deal"
-}
-```
-
-### Admin Endpoints
-
-#### Approve/Reject Deal
-
-```http
-PATCH /admin/deals/{dealId}
-```
-
-Request Body:
-
-```json
-{
-  "status": "active" | "cancelled",
-  "rejectionReason": "string (optional)"
-}
-```
-
-Response (200):
-
-```json
-{
-  "message": "Deal approved/rejected",
-  "deal": {
-    "id": "uuid",
-    "status": "string",
-    "rejectionReason": "string"
-  }
-}
-```
-
-#### Get Deal Details (Admin Only)
-
-```http
-GET /admin/deals/{dealId}
-```
-
-Response (200):
-
-```json
-{
-  "id": "uuid",
-  "title": "string",
-  "description": "string",
-  "type": "string",
-  "originalPrice": "number",
-  "discountedPrice": "number",
-  "minGroupSize": "number",
-  "maxGroupSize": "number",
-  "currentGroupSize": "number",
-  "status": "string",
-  "startDate": "string",
-  "endDate": "string",
-  "images": "string[]",
-  "location": "string",
-  "merchant": {
-    "id": "uuid",
-    "email": "string",
-    "firstName": "string",
-    "lastName": "string"
-  }
-}
-```
-
-## Data Types
-
-### DealStatus
-
-- `draft`
-- `pending_approval`
-- `active`
-- `completed`
-- `cancelled`
-
-### DealType
-
-- `physical`
-- `digital`
-
-### ParticipantStatus
-
-- `pending`
-- `paid`
-- `completed`
-- `cancelled`
-- `refunded`
-
-### UserRole
-
-- `user`
-- `merchant`
-
-### User
-
-```typescript
-interface User {
-  id: string; // Required, UUID v4 format
-  email: string; // Required, valid email format, unique
-  firstName: string; // Required, min 2 characters
-  lastName: string; // Required, min 2 characters
-  role: UserRole; // Required, enum: ['user', 'merchant']
-  phoneNumber?: string; // Optional, phone number
-  isVerified: boolean; // Required, default: false
-  lastLogin: Date | null; // Optional, last successful login date
-  createdAt: Date; // Required, automatically set
-  updatedAt: Date; // Required, automatically updated
-}
-```
-
-### LoginCredentials
-
-```typescript
-interface LoginCredentials {
-  email: string; // Required, valid email format
-  password: string; // Required, min 8 characters
-}
-```
-
-### RegisterData
-
-```typescript
-interface RegisterData {
-  email: string; // Required, valid email format
-  password: string; // Required, min 8 characters, must contain at least 1 number and 1 special character
-  firstName: string; // Required, min 2 characters, max 50 characters
-  lastName: string; // Required, min 2 characters, max 50 characters
-}
-```
-
-### TokenResponse
-
-```typescript
-interface TokenResponse {
-  token: string; // Required, JWT token
-  expiresIn: number; // Required, token expiration time in seconds
-}
-```
-
-### ErrorResponse
-
-```typescript
-interface ErrorResponse {
-  error: string; // Required, error message
-  fields?: {
-    // Optional, validation errors by field
-    [fieldName: string]: string[];
-  };
-  code?: string; // Optional, error code for client-side handling
-}
-```
-
-## Email Verification Flow
-
-The email verification process consists of the following steps:
-
-1. User registration
-2. Verification email sent automatically
-3. User enters verification code
-4. Email verification
-5. (Optional) Resend verification code
-
-### Registration with Email Verification
-
-When a user registers, they will automatically receive a verification email containing a 6-digit code. The code is valid for 30 minutes.
-
-**Endpoint:** `POST /api/auth/register`
-
-**Request Body:**
-
-```json
-{
-  "email": "user@example.com",
-  "password": "securepassword",
-  "firstName": "John",
-  "lastName": "Doe",
-  "role": "user",
-  "phoneNumber": "+1234567890"
-}
-```
-
-**Success Response:**
-
-```json
-{
-  "message": "Registration successful. Please check your email for verification code.",
-  "user": {
-    "id": "user_id",
-    "email": "user@example.com",
-    "firstName": "John",
-    "lastName": "Doe",
-    "role": "user",
-    "phoneNumber": "+1234567890",
-    "isVerified": false,
-    "lastLogin": null,
-    "createdAt": "2024-03-21T12:00:00Z",
-    "updatedAt": "2024-03-21T12:00:00Z"
-  }
-}
-```
-
-### Verify Email
-
-After receiving the verification code, the user can verify their email address.
-
-**Endpoint:** `POST /api/auth/verify-email`
-
-**Request Body:**
-
-```
-
-```
+| Status | Response Example                       |
+| ------ | -------------------------------------- |
+| 400    | `{ "error": "Invalid input" }`         |
+| 401    | `{ "error": "Unauthorized" }`          |
+| 403    | `{ "error": "Forbidden" }`             |
+| 404    | `{ "error": "Not found" }`             |
+| 500    | `{ "error": "Internal server error" }` |
+
+---
+
+# Best Practices
+
+- Always check for `error` in the response.
+- Use `credentials: 'include'` for all authenticated requests.
+- Use the correct query param for each model.
+- For authentication, see [KUPONNA_AUTHENTICATION_DOCUMENTATION.md].
+- For advanced filtering, combine multiple query params as needed.
