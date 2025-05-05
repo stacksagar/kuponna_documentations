@@ -13,6 +13,9 @@
 - [Messages API](#messages-api)
 - [Notifications API](#notifications-api)
 - [Delivery Tracking API](#delivery-tracking-api)
+- [Merchant Profile API](#merchant-profile-api)
+- [Complaints API](#complaints-api)
+- [Vouchers API](#vouchers-api)
 - [Error Responses](#error-responses)
 - [Best Practices](#best-practices)
 
@@ -838,6 +841,247 @@ async function createDeliveryTracking() {
 
 ---
 
+# Merchant Profile API
+
+## Overview
+
+- **Purpose:** Manage merchant business profiles
+- **Who can use:**
+  - `GET`: Merchants (own), admins (all)
+  - `POST`: Merchants (own)
+  - `PUT`: Merchants (own), admins (all)
+  - `DELETE`: Admins (all)
+
+## Endpoints
+
+- `GET /api/merchant-profile` — List merchant profiles (with filters)
+- `GET /api/merchant-profile?merchantProfileId=...` — Get a single merchant profile
+- `POST /api/merchant-profile` — Create merchant profile (merchant only)
+- `PUT /api/merchant-profile?merchantProfileId=...` — Update merchant profile (merchant/admin only)
+- `DELETE /api/merchant-profile?merchantProfileId=...` — Delete merchant profile (admin only)
+
+## Query Parameters
+
+| Name              | Type   | Required | Description          |
+| ----------------- | ------ | -------- | -------------------- |
+| merchantProfileId | string | No       | Get a single profile |
+| userId            | string | No       | Filter by user       |
+| status            | string | No       | Filter by status     |
+
+## Request Body (POST)
+
+| Field              | Type   | Required | Description               |
+| ------------------ | ------ | -------- | ------------------------- |
+| businessName       | string | Yes      | Merchant business name    |
+| businessAddress    | string | Yes      | Merchant business address |
+| businessPhone      | string | Yes      | Merchant business phone   |
+| businessEmail      | string | Yes      | Merchant business email   |
+| registrationNumber | string | No       | Registration number       |
+
+## Response (GET all)
+
+```json
+{
+  "items": [
+    {
+      "id": "string",
+      "userId": "string",
+      "businessName": "string",
+      "businessAddress": "string",
+      "businessPhone": "string",
+      "businessEmail": "string",
+      "registrationNumber": "string|null",
+      "status": "pending|approved|rejected",
+      "verifiedAt": "2024-06-01T12:00:00Z|null",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+## Example: Creating a Merchant Profile
+
+```js
+import axios from "axios";
+
+async function createMerchantProfile() {
+  const res = await axios.post(
+    "/api/merchant-profile",
+    {
+      businessName: "My Store",
+      businessAddress: "123 Main St",
+      businessPhone: "555-1234",
+      businessEmail: "store@example.com",
+      registrationNumber: "RC123456",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
+}
+```
+
+---
+
+# Complaints API
+
+## Overview
+
+- **Purpose:** Manage user complaints and refund requests
+- **Who can use:**
+  - `GET`: Users (own), merchants (own), admins (all)
+  - `POST`: Users (own)
+  - `PUT`: Merchants (own), admins (all)
+  - `DELETE`: Admins (all)
+
+## Endpoints
+
+- `GET /api/complaints` — List complaints (with filters)
+- `GET /api/complaints?complaintId=...` — Get a single complaint
+- `POST /api/complaints` — Create complaint (user only)
+- `PUT /api/complaints?complaintId=...` — Update complaint (merchant/admin only)
+- `DELETE /api/complaints?complaintId=...` — Delete complaint (admin only)
+
+## Query Parameters
+
+| Name        | Type   | Required | Description            |
+| ----------- | ------ | -------- | ---------------------- |
+| complaintId | string | No       | Get a single complaint |
+| userId      | string | No       | Filter by user         |
+| dealId      | string | No       | Filter by deal         |
+| orderId     | string | No       | Filter by order        |
+| status      | string | No       | Filter by status       |
+
+## Request Body (POST)
+
+| Field       | Type   | Required | Description                 |
+| ----------- | ------ | -------- | --------------------------- |
+| dealId      | string | No       | Related deal                |
+| orderId     | string | No       | Related order               |
+| type        | string | Yes      | Enum: 'complaint', 'refund' |
+| subject     | string | Yes      | Complaint subject           |
+| description | string | Yes      | Complaint description       |
+
+## Response (GET all)
+
+```json
+{
+  "items": [
+    {
+      "id": "string",
+      "userId": "string",
+      "dealId": "string|null",
+      "orderId": "string|null",
+      "type": "complaint|refund",
+      "subject": "string",
+      "description": "string",
+      "status": "pending|under_review|resolved|rejected",
+      "adminId": "string|null",
+      "resolution": "string|null",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+## Example: Creating a Complaint
+
+```js
+import axios from "axios";
+
+async function createComplaint() {
+  const res = await axios.post(
+    "/api/complaints",
+    {
+      type: "complaint",
+      subject: "Product not delivered",
+      description: "I have not received my product.",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
+}
+```
+
+---
+
+# Vouchers API
+
+## Overview
+
+- **Purpose:** Manage digital/physical vouchers for orders
+- **Who can use:**
+  - `GET`: Users (own), merchants (own), admins (all)
+  - `POST`, `PUT`: Merchants (own), admins (all)
+  - `DELETE`: Admins (all)
+
+## Endpoints
+
+- `GET /api/vouchers` — List vouchers (with filters)
+- `GET /api/vouchers?voucherId=...` — Get a single voucher
+- `POST /api/vouchers` — Create voucher (merchant/admin only)
+- `PUT /api/vouchers?voucherId=...` — Update voucher (merchant/admin only)
+- `DELETE /api/vouchers?voucherId=...` — Delete voucher (admin only)
+
+## Query Parameters
+
+| Name      | Type   | Required | Description          |
+| --------- | ------ | -------- | -------------------- |
+| voucherId | string | No       | Get a single voucher |
+| userId    | string | No       | Filter by user       |
+| orderId   | string | No       | Filter by order      |
+| status    | string | No       | Filter by status     |
+
+## Request Body (POST)
+
+| Field       | Type   | Required | Description                                      |
+| ----------- | ------ | -------- | ------------------------------------------------ |
+| orderId     | string | Yes      | Order for the voucher                            |
+| userId      | string | Yes      | User receiving the voucher                       |
+| code        | string | Yes      | Unique voucher code                              |
+| status      | string | No       | Enum: 'active', 'used', 'invalidated', 'expired' |
+| deliveredAt | string | No       | ISO 8601 date                                    |
+
+## Response (GET all)
+
+```json
+{
+  "items": [
+    {
+      "id": "string",
+      "orderId": "string",
+      "userId": "string",
+      "code": "string",
+      "status": "active|used|invalidated|expired",
+      "deliveredAt": "2024-06-01T12:00:00Z|null",
+      "createdAt": "2024-06-01T12:00:00Z",
+      "updatedAt": "2024-06-01T12:00:00Z"
+    }
+  ]
+}
+```
+
+## Example: Creating a Voucher
+
+```js
+import axios from "axios";
+
+async function createVoucher() {
+  const res = await axios.post(
+    "/api/vouchers",
+    {
+      orderId: "123",
+      userId: "456",
+      code: "VOUCHER123",
+      status: "active",
+    },
+    { withCredentials: true }
+  );
+  console.log(res.data);
+}
+```
+
 # Error Responses
 
 All endpoints may return the following error responses:
@@ -859,3 +1103,5 @@ All endpoints may return the following error responses:
 - Use the correct query param for each model.
 - For authentication, see [KUPONNA_AUTHENTICATION_DOCUMENTATION.md].
 - For advanced filtering, combine multiple query params as needed.
+
+---
