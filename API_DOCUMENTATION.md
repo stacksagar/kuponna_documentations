@@ -16,6 +16,7 @@
 - [Merchant Profile API](#merchant-profile-api)
 - [Complaints API](#complaints-api)
 - [Vouchers API](#vouchers-api)
+- [Groups API](#groups-api)
 - [Error Responses](#error-responses)
 - [Best Practices](#best-practices)
 
@@ -1081,6 +1082,164 @@ async function createVoucher() {
   console.log(res.data);
 }
 ```
+
+---
+
+# Groups API
+
+## Overview
+
+- **Purpose:** Manage group purchasing groups for deals (create, join, leave, checkout)
+- **Who can use:**
+  - `GET`: Anyone for public groups, authenticated for group details
+  - `POST`, `PATCH`: Authenticated users
+
+## Endpoints
+
+- `GET /api/groups` — List all groups (with optional filters)
+- `POST /api/groups` — Create a new group for a deal
+- `GET /api/groups/[groupId]` — Get a specific group with members
+- `POST /api/groups/[groupId]/join` — Join an existing group
+- `POST /api/groups/[groupId]/leave` — Leave a group
+- `POST /api/groups/[groupId]/checkout` — Process payment for a group purchase
+- `GET /api/groups/[groupId]/invite` — Get invite link/info
+- `POST /api/groups/[groupId]/invite` — Send email invites
+
+## Query Parameters for GET /api/groups
+
+| Name   | Type   | Required | Description             |
+| ------ | ------ | -------- | ----------------------- |
+| dealId | string | No       | Filter by deal          |
+| status | string | No       | Filter by group status  |
+
+## Request Body for POST /api/groups (Create Group)
+
+| Field  | Type   | Required | Description               |
+| ------ | ------ | -------- | ------------------------- |
+| dealId | string | Yes      | The deal to create a group for |
+
+## Response for GET /api/groups
+
+```json
+{
+  "items": [
+    {
+      "id": "string",
+      "dealId": "string",
+      "creatorUserId": "string",
+      "status": "open | full | completed | expired",
+      "createdAt": "2024-05-21T00:00:00.000Z",
+      "updatedAt": "2024-05-21T00:00:00.000Z"
+    }
+  ]
+}
+```
+
+## Response for GET /api/groups/[groupId]
+
+```json
+{
+  "id": "string",
+  "status": "open | full | completed | expired",
+  "createdAt": "2024-05-21T00:00:00.000Z",
+  "deal": {
+    "id": "string",
+    "title": "string",
+    "discountedPrice": 80,
+    "minGroupSize": 5,
+    "maxGroupSize": 10
+  },
+  "creator": {
+    "id": "string",
+    "name": "string"
+  },
+  "members": [
+    {
+      "id": "string",
+      "userId": "string",
+      "joinedAt": "2024-05-21T00:00:00.000Z",
+      "paymentStatus": "pending | paid | failed | left",
+      "User": {
+        "id": "string",
+        "name": "string",
+        "email": "string"
+      }
+    }
+  ],
+  "memberCount": 3
+}
+```
+
+## Request Body for POST /api/groups/[groupId]/checkout
+
+| Field         | Type   | Required | Description                |
+| ------------- | ------ | -------- | -------------------------- |
+| paymentMethod | object | Yes      | Payment method information |
+
+## Response for POST /api/groups/[groupId]/checkout
+
+```json
+{
+  "success": true,
+  "paymentStatus": "paid",
+  "groupStatus": "completed",
+  "message": "Payment successful"
+}
+```
+
+## Example: Create a Group
+
+```javascript
+import axios from 'axios';
+
+async function createGroup(dealId) {
+  try {
+    const response = await axios.post('/api/groups', {
+      dealId: dealId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error creating group:', error);
+    throw error;
+  }
+}
+```
+
+## Example: Join a Group
+
+```javascript
+import axios from 'axios';
+
+async function joinGroup(groupId) {
+  try {
+    const response = await axios.post(`/api/groups/${groupId}/join`);
+    return response.data;
+  } catch (error) {
+    console.error('Error joining group:', error);
+    throw error;
+  }
+}
+```
+
+## Example: Complete Checkout
+
+```javascript
+import axios from 'axios';
+
+async function checkout(groupId, paymentMethod) {
+  try {
+    const response = await axios.post(`/api/groups/${groupId}/checkout`, {
+      paymentMethod: paymentMethod
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error processing payment:', error);
+    throw error;
+  }
+}
+```
+
+---
 
 # Error Responses
 
