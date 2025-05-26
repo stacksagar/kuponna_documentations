@@ -4,7 +4,7 @@
 - [POST /api/auth/verify-email](#post-apiauthverify-email)
 - [POST /api/auth/resend-verification](#post-apiauthresend-verification)
 - [POST /api/auth/login](#post-apiauthlogin)
-- [POST /api/auth/refresh](#post-apiauthrefresh)
+- [GET /api/auth/refresh](#post-apiauthrefresh)
 - [POST /api/auth/logout](#post-apiauthlogout)
 - [POST /api/auth/forgot-password](#post-apiauthforgot-password)
 - [POST /api/auth/resend-reset-code](#post-apiauthresend-reset-code)
@@ -33,7 +33,7 @@ The authentication system uses JWT (JSON Web Tokens) for secure authentication. 
    - If the user did not receive or lost the verification code, this endpoint resends it.
 4. **Login** (`POST /api/auth/login`)
    - Authenticate a user and receive a JWT token. Only possible after email verification.
-5. **Token Refresh** (`POST /api/auth/refresh`)
+5. **Token Refresh** (`GET /api/auth/refresh`)
    - Automatically refresh an expired JWT token to keep the user logged in without re-entering credentials.
 6. **Logout** (`POST /api/auth/logout`)
    - Clear the authentication state and invalidate the user's session.
@@ -216,7 +216,7 @@ Authenticate a user and receive an access token.
 
 [Back to top](#authentication-api-endpoints)
 
-### POST /api/auth/refresh
+### GET /api/auth/refresh
 
 Refresh an expired access token.
 
