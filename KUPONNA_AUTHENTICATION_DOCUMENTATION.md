@@ -22,6 +22,9 @@
 
 The authentication system uses JWT (JSON Web Tokens) for secure authentication. The flow consists of the following steps:
 
+> **Note for App/Mobile Developers:**
+> - While web clients use HTTP-only cookies for authentication, mobile and app clients should use the `Authorization: Bearer <token>` header for all authenticated requests. All endpoints that require authentication accept either cookies (for browsers) or bearer tokens (for apps).
+
 1. **Registration** (`POST /api/auth/register`)
    - Create a new user account. This is the first step for any new user.
 2. **Email Verification** (`POST /api/auth/verify-email`)
@@ -113,8 +116,13 @@ Verify a user's email address using the verification code.
 #### Request Headers
 
 ```typescript
+// For web (browser):
 {
   Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
 }
 ```
 
@@ -155,8 +163,13 @@ Resend the verification email to the user.
 #### Request Headers
 
 ```typescript
+// For web (browser):
 {
   Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
 }
 ```
 
@@ -210,8 +223,13 @@ Refresh an expired access token.
 #### Request Headers
 
 ```typescript
+// For web (browser):
 {
   Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
 }
 ```
 
@@ -244,8 +262,13 @@ Logout the current user and invalidate their token.
 #### Request Headers
 
 ```typescript
+// For web (browser):
 {
   Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
 }
 ```
 
@@ -328,6 +351,11 @@ Reset the user's password using the verified OTP token.
 #### Request Headers
 
 ```typescript
+// For web (browser):
+{
+  Authorization: string; // Required, Bearer token from verify-reset-token
+}
+// For app/mobile:
 {
   Authorization: string; // Required, Bearer token from verify-reset-token
 }
@@ -358,8 +386,13 @@ Change the user's password while logged in.
 #### Request Headers
 
 ```typescript
+// For web (browser):
 {
   Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
 }
 ```
 
