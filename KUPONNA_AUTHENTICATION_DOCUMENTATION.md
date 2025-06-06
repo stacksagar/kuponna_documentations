@@ -10,7 +10,7 @@
 - [POST /api/auth/resend-reset-code](#post-apiauthresend-reset-code)
 - [POST /api/auth/verify-reset-token](#post-apiauthverify-reset-token)
 - [POST /api/auth/reset-password](#post-apiauthreset-password)
-- [POST /api/auth/change-password](#post-apiauthchange-password)
+- [PATCH /api/auth/change-password](#post-apiauthchange-password)
 - [POST /api/auth/resend-email-code](#post-apiauthresend-email-code)
 - [POST /api/auth/verify-email-code](#post-apiauthverify-email-code)
 
@@ -45,7 +45,7 @@ The authentication system uses JWT (JSON Web Tokens) for secure authentication. 
    - Verify the reset code sent to the user's email before allowing password reset.
 10. **Reset Password** (`POST /api/auth/reset-password`)
     - Set a new password after verifying the reset code.
-11. **Change Password** (`POST /api/auth/change-password`)
+11. **Change Password** (`PATCH /api/auth/change-password`)
     - Change the password for a logged-in user (requires current password).
 12. **Resend Email Code (Alternative)** (`POST /api/auth/resend-email-code`)
     - Resend the email verification code using the user's email (alternative to the authenticated resend).
