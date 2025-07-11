@@ -23,28 +23,7 @@ Authorization: Bearer <your-token>
 ---
 
 ## Public Endpoints
-
-### Authentication
-
-**POST** `/api/auth/register` - Register new user
-- Required: `name`, `email`, `password`, `role` (`user` | `merchant`)
-
-**POST** `/api/auth/login` - User login
-- Required: `email`, `password`
-
-**POST** `/api/auth/logout` - User logout
-
-**POST** `/api/auth/forgot-password` - Request password reset
-- Required: `email`
-
-**POST** `/api/auth/reset-password` - Reset password with token
-- Required: `token`, `newPassword`
-
-**POST** `/api/auth/verify-email` - Verify email with code
-- Required: `code`
-
-**POST** `/api/auth/resend-verification` - Resend verification email
-
+ 
 ### Deals
 
 **GET** `/api/deals` - Get all deals
@@ -74,19 +53,38 @@ Authorization: Bearer <your-token>
 
 ---
 
+## Authenticated Endpoints
+
+### Messages
+
+**GET** `/api/user/messages` - Get messages for a chat
+- `chatGroupId`: get messages for group chat
+- `recipientId`: get messages for one-on-one chat
+
+**POST** `/api/user/messages` - Send a message
+- Required: `content`
+- Required: `chatGroupId` OR `recipientId`
+
+### Message Groups
+
+**GET** `/api/user/messages/groups` - Get user's chat groups
+
+**POST** `/api/user/messages/groups` - Create group chat
+- Required: `name`, `memberIds[]`
+
+### Group Members
+
+**POST** `/api/user/messages/groups/{groupId}/members` - Add member to group
+- Required: `userId`
+
+**DELETE** `/api/user/messages/groups/{groupId}/members` - Remove member from group
+- Required: `userId` (as query parameter)
+
+---
+
 ## Data Models
 
 ```typescript
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "user" | "merchant" | "admin";
-  isVerified: boolean;
-  picture?: string;
-  phoneNumber?: string;
-}
-
 interface Deal {
   id: string;
   title: string;
@@ -114,38 +112,6 @@ interface Category {
   dealCount?: number;
 }
 
-interface Group {
-  id: string;
-  dealId: string;
-  creatorId: string;
-  status: "open" | "full" | "completed" | "expired";
-  maxGroupSize: number;
-  currentMembers: number;
-  deal: Deal;
-  creator: User;
-  groupMembers: GroupMember[];
-}
-
-interface GroupMember {
-  id: string;
-  groupId: string;
-  userId: string;
-  paymentStatus: "pending" | "paid" | "failed" | "left";
-  user: User;
-}
-
-interface Order {
-  id: string;
-  dealId: string;
-  userId: string;
-  groupId: string;
-  amount: number;
-  quantity: number;
-  status: "pending" | "paid" | "shipped" | "delivered" | "cancelled" | "fulfilled";
-  paymentStatus: "paid" | "unpaid" | "failed";
-  type: "physical" | "digital";
-}
-
 interface Review {
   id: string;
   dealId: string;
@@ -153,7 +119,11 @@ interface Review {
   rating: number;
   title: string;
   content: string;
-  user: User;
+  user: {
+    id: string;
+    name: string;
+    picture?: string;
+  };
 }
 
 interface Message {
@@ -162,13 +132,24 @@ interface Message {
   senderId: string;
   content: string;
   readBy: string[];
-  sender: User;
+  createdAt: string;
+  sender: {
+    id: string;
+    name: string;
+    picture?: string;
+  };
 }
 
 interface ChatGroup {
   id: string;
   name: string;
   isGroup: boolean;
-  members: GroupMember[];
+  avatar?: string;
+}
+
+interface ChatGroupMember {
+  id: string;
+  chatGroupId: string;
+  userId: string;
 }
 ```
