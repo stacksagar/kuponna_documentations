@@ -13,6 +13,7 @@
 - [PATCH /api/auth/change-password](#post-apiauthchange-password)
 - [POST /api/auth/resend-email-code](#post-apiauthresend-email-code)
 - [POST /api/auth/verify-email-code](#post-apiauthverify-email-code)
+- [PATCH /api/user/profile](#patch-apiuserprofile)
 
 ---
 
@@ -465,6 +466,104 @@ Verify a user's email address using the verification code.
   }
 }
 ```
+
+### PATCH /api/user/profile
+
+Update the user's profile information.
+
+#### Request Headers
+
+```typescript
+// For web (browser):
+{
+  Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
+}
+```
+
+#### Request Body
+
+```typescript
+{
+  firstName?: string;  // Optional, min 2 characters
+  lastName?: string;   // Optional, min 2 characters
+  phoneNumber?: string; // Optional, phone number
+}
+```
+
+#### Response 200 (application/json)
+
+```typescript
+{
+  message: string; // Required, "Profile updated successfully"
+  user: {
+    id: string;        // Required, UUID v4 format
+    email: string;     // Required, valid email format
+    firstName: string; // Required, min 2 characters
+    lastName: string;  // Required, min 2 characters
+    role: string;      // Required, enum: ['user', 'merchant']
+    phoneNumber?: string; // Optional, phone number
+    isVerified: boolean;  // Required
+    lastLogin: string | null; // Optional, ISO 8601 datetime format
+    createdAt: string; // Required, ISO 8601 datetime format
+    updatedAt: string; // Required, ISO 8601 datetime format
+  }
+}
+```
+
+### PATCH /api/user/profile
+
+Update the current user's profile information.
+
+#### Request Headers
+
+```typescript
+// For web (browser):
+{
+  Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
+}
+```
+
+#### Request Body
+
+```typescript
+{
+  firstName?: string;    // Optional, min 2 characters
+  lastName?: string;     // Optional, min 2 characters
+  phoneNumber?: string;  // Optional, phone number
+  // Note: The following fields cannot be updated via this endpoint:
+  // id, password, createdAt, updatedAt, lastLogin, role, isVerified, merchantVerified
+}
+```
+
+#### Response 200 (application/json)
+
+```typescript
+{
+  message: string;   // Required, "Profile updated successfully"
+  user: {
+    id: string;        // Required, UUID v4 format
+    email: string;     // Required, valid email format
+    firstName: string; // Required, min 2 characters
+    lastName: string;  // Required, min 2 characters
+    role: string;      // Required, enum: ['user', 'merchant']
+    phoneNumber?: string; // Optional, phone number
+    isVerified: boolean;  // Required
+    lastLogin: string; // Required, ISO 8601 datetime format
+    createdAt: string; // Required, ISO 8601 datetime format
+    updatedAt: string; // Required, ISO 8601 datetime format
+  }
+}
+```
+
+[Back to top](#authentication-api-endpoints)
 
 ## Error Responses
 
