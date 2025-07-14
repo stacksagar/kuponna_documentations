@@ -25,6 +25,8 @@ The authentication system uses JWT (JSON Web Tokens) for secure authentication. 
 
 > **Note for App/Mobile Developers:**
 > - While web clients use HTTP-only cookies for authentication, mobile and app clients should use the `Authorization: Bearer <token>` header for all authenticated requests. All endpoints that require authentication accept either cookies (for browsers) or bearer tokens (for apps).
+> - For mobile apps, implement the "Remember Me" functionality in your login UI and pass the `rememberMe` parameter in the login request to extend session duration to 30 days.
+> - When implementing auto-login features, respect the user's choice for session duration and store tokens securely using platform-specific secure storage (Keychain on iOS, Keystore on Android).
 
 1. **Registration** (`POST /api/auth/register`)
    - Create a new user account. This is the first step for any new user.
@@ -56,9 +58,45 @@ The authentication system uses JWT (JSON Web Tokens) for secure authentication. 
 ### Token Management
 
 - Tokens are stored in HTTP-only cookies for security
-- Tokens expire after 24 hours
-- Refresh tokens are handled automatically
+- Default token expiration: 24 hours
+- Extended token expiration: 30 days (when `rememberMe: true` is used during login)
+- Refresh tokens maintain the same expiration duration as the original token
 - All tokens are signed with HS256 algorithm
+
+### Remember Me Functionality
+
+The authentication system supports a "Remember Me" option that extends the session duration:
+
+- **Default behavior**: Tokens expire after 24 hours
+- **Remember Me enabled**: Tokens expire after 30 days
+- **Session persistence**: When refreshing tokens, the system maintains the original expiration duration
+- **Implementation**: Pass `rememberMe: true` in the login request body
+
+#### Usage Example
+
+```typescript
+// Standard login (24-hour session)
+const loginResponse = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123',
+    rememberMe: false // or omit this field
+  })
+});
+
+// Extended login (30-day session)
+const extendedLoginResponse = await fetch('/api/auth/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    email: 'user@example.com',
+    password: 'password123',
+    rememberMe: true
+  })
+});
+```
 
 ### Security Features
 
@@ -192,6 +230,7 @@ Authenticate a user and receive an access token.
 {
   email: string; // Required, valid email format
   password: string; // Required, min 8 characters
+  rememberMe?: boolean; // Optional, extends session to 30 days if true
 }
 ```
 
@@ -219,7 +258,9 @@ Authenticate a user and receive an access token.
 
 ### GET /api/auth/refresh
 
-Refresh an expired access token.
+Refresh an expired access token while maintaining the original session duration.
+
+**Important**: The refresh endpoint automatically detects whether the original token was created with "Remember Me" functionality and maintains the same expiration duration (24 hours or 30 days).
 
 #### Request Headers
 
@@ -615,10 +656,90 @@ All endpoints may return the following error responses:
 
 ## Best Practices
 
+### For Web Developers
 1. Use TypeScript for type safety
 2. Implement proper validation
 3. Implement email verification
 4. Set verification code expiration
+5. Provide clear UI for "Remember Me" option
+
+### For Mobile/App Developers
+1. **Session Management**: 
+   - Implement a "Remember for 30 days" toggle in your login UI
+   - Store the user's preference locally for better UX
+   - Use secure storage for tokens (Keychain/Keystore)
+
+2. **Token Handling**:
+   - Always include the `Authorization: Bearer <token>` header for authenticated requests
+   - Implement automatic token refresh before expiration
+   - Handle different session durations based on user preference
+
+3. **User Experience**:
+   - Show session duration information to users
+   - Provide easy logout functionality
+   - Handle session expiration gracefully
+
+#### Example Mobile Implementation
+
+```typescript
+// Example for React Native or similar frameworks
+interface LoginRequest {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
+
+// Login function with Remember Me support
+async function login(credentials: LoginRequest) {
+  try {
+    const response = await fetch('https://your-api.com/api/auth/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(credentials),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Store token securely
+      await SecureStorage.setItem('authToken', data.token);
+      
+      // Store session preference
+      await AsyncStorage.setItem('rememberMe', credentials.rememberMe.toString());
+      
+      return data;
+    }
+  } catch (error) {
+    console.error('Login failed:', error);
+    throw error;
+  }
+}
+
+// Auto-refresh implementation
+async function refreshToken() {
+  try {
+    const token = await SecureStorage.getItem('authToken');
+    
+    const response = await fetch('https://your-api.com/api/auth/refresh', {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      await SecureStorage.setItem('authToken', data.token);
+      return data.token;
+    }
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    // Handle logout or re-authentication
+  }
+}
+```
 
 ## Security Considerations
 
