@@ -119,9 +119,8 @@ Register a new user account.
 {
   email: string;      // Required, valid email format
   password: string;   // Required, min 8 characters
-  firstName: string;  // Required, min 2 characters
-  lastName: string;   // Required, min 2 characters
-  role: string;      // Required, enum: ['user', 'merchant']
+  name: string;       // Required, min 2 characters, user's full name
+  role: string;       // Required, enum: ['user', 'merchant']
   phoneNumber?: string; // Optional, phone number
 }
 ```
@@ -134,8 +133,7 @@ Register a new user account.
   user: {
     id: string;        // Required, UUID v4 format
     email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
+    name: string;      // Required, min 2 characters, user's full name
     role: string;      // Required, enum: ['user', 'merchant']
     phoneNumber?: string; // Optional, phone number
     isVerified: boolean;  // Required, default: false
@@ -181,8 +179,7 @@ Verify a user's email address using the verification code.
   user: {
     id: string;        // Required, UUID v4 format
     email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
+    name: string;      // Required, min 2 characters, user's full name
     role: string;      // Required, enum: ['user', 'merchant']
     phoneNumber?: string; // Optional, phone number
     isVerified: boolean;  // Required, true
@@ -242,8 +239,7 @@ Authenticate a user and receive an access token.
   user: {
     id: string;        // Required, UUID v4 format
     email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
+    name: string;      // Required, min 2 characters, user's full name
     role: string;      // Required, enum: ['user', 'merchant']
     phoneNumber?: string; // Optional, phone number
     isVerified: boolean;  // Required
@@ -283,8 +279,7 @@ Refresh an expired access token while maintaining the original session duration.
   user: {
     id: string;        // Required, UUID v4 format
     email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
+    name: string;      // Required, min 2 characters, user's full name
     role: string;      // Required, enum: ['user', 'merchant']
     phoneNumber?: string; // Optional, phone number
     isVerified: boolean;  // Required
@@ -496,8 +491,7 @@ Verify a user's email address using the verification code.
   user: {
     id: string;        // Required, UUID v4 format
     email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
+    name: string;      // Required, min 2 characters, user's full name
     role: string;      // Required, enum: ['user', 'merchant']
     phoneNumber?: string; // Optional, phone number
     isVerified: boolean;  // Required, true
@@ -529,9 +523,19 @@ Update the user's profile information.
 
 ```typescript
 {
-  firstName?: string;  // Optional, min 2 characters
-  lastName?: string;   // Optional, min 2 characters
-  phoneNumber?: string; // Optional, phone number
+  name?: string;           // Optional, user's full name
+  phoneNumber?: string;    // Optional, phone number
+  picture?: string;        // Optional, profile picture URL
+  country?: string;        // Optional, user's country
+  timezone?: string;       // Optional, user's timezone
+  bio?: string;           // Optional, user biography/description
+  pushNotification?: boolean;  // Optional, enable/disable push notifications
+  emailNotification?: boolean; // Optional, enable/disable email notifications  
+  smsNotification?: boolean;   // Optional, enable/disable SMS notifications
+  categories?: string[];   // Optional, array of user's interested categories
+  // Note: The following fields cannot be updated via this endpoint:
+  // id, email, password, role, createdAt, updatedAt, lastLogin, isVerified, merchantVerified
+  // Merchant-specific fields (merchantRole, available_balance, book_balance, monthly_target) are also not updatable through this endpoint
 }
 ```
 
@@ -541,65 +545,24 @@ Update the user's profile information.
 {
   message: string; // Required, "Profile updated successfully"
   user: {
-    id: string;        // Required, UUID v4 format
-    email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
-    role: string;      // Required, enum: ['user', 'merchant']
-    phoneNumber?: string; // Optional, phone number
-    isVerified: boolean;  // Required
-    lastLogin: string | null; // Optional, ISO 8601 datetime format
-    createdAt: string; // Required, ISO 8601 datetime format
-    updatedAt: string; // Required, ISO 8601 datetime format
-  }
-}
-```
-
-### PATCH /api/user/profile
-
-Update the current user's profile information.
-
-#### Request Headers
-
-```typescript
-// For web (browser):
-{
-  Cookie: string; // Required, contains httpOnly JWT token
-}
-// For app/mobile:
-{
-  Authorization: string; // Required, Bearer <JWT token>
-}
-```
-
-#### Request Body
-
-```typescript
-{
-  firstName?: string;    // Optional, min 2 characters
-  lastName?: string;     // Optional, min 2 characters
-  phoneNumber?: string;  // Optional, phone number
-  // Note: The following fields cannot be updated via this endpoint:
-  // id, password, createdAt, updatedAt, lastLogin, role, isVerified, merchantVerified
-}
-```
-
-#### Response 200 (application/json)
-
-```typescript
-{
-  message: string;   // Required, "Profile updated successfully"
-  user: {
-    id: string;        // Required, UUID v4 format
-    email: string;     // Required, valid email format
-    firstName: string; // Required, min 2 characters
-    lastName: string;  // Required, min 2 characters
-    role: string;      // Required, enum: ['user', 'merchant']
-    phoneNumber?: string; // Optional, phone number
-    isVerified: boolean;  // Required
-    lastLogin: string; // Required, ISO 8601 datetime format
-    createdAt: string; // Required, ISO 8601 datetime format
-    updatedAt: string; // Required, ISO 8601 datetime format
+    id: string;                   // Required, UUID v4 format
+    email: string;                // Required, valid email format
+    name: string;                 // Required, user's full name
+    role: string;                 // Required, enum: ['user', 'merchant', 'admin']
+    phoneNumber?: string;         // Optional, phone number
+    picture?: string;             // Optional, profile picture URL
+    country?: string;             // Optional, user's country
+    timezone?: string;            // Optional, user's timezone
+    bio?: string;                 // Optional, user biography/description
+    isVerified: boolean;          // Required, email verification status
+    merchantVerified?: boolean;   // Optional, merchant verification status (for merchant users)
+    pushNotification: boolean;    // Required, push notification preference
+    emailNotification: boolean;   // Required, email notification preference
+    smsNotification: boolean;     // Required, SMS notification preference
+    categories: string[];         // Required, array of user's interested categories
+    lastLogin: string | null;     // Optional, ISO 8601 datetime format
+    createdAt: string;            // Required, ISO 8601 datetime format
+    updatedAt: string;            // Required, ISO 8601 datetime format
   }
 }
 ```
