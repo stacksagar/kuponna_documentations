@@ -65,6 +65,18 @@ Authorization: Bearer <your-token>
 
 **GET** `/api/categories?id={id}` - Get single category
 
+### App Settings
+
+**GET** `/api/app/languages` - Get available languages
+- `defaultOnly`: `true`, `false` (get only default language)
+- `region`: `Africa`, `America` (filter by region)
+
+**GET** `/api/app/countries` - Get available countries
+- `defaultOnly`: `true`, `false` (get only default country)
+- `withCurrency`: `true`, `false` (include currency information, default: true)
+- `region`: `Africa`, `America` (filter by region)
+- `continent`: `North America`, `South America`, `Africa` (more specific filtering)
+
 ### Reviews
 
 **GET** `/api/reviews?dealId={dealId}` - Get reviews for a deal
@@ -100,6 +112,32 @@ Authorization: Bearer <your-token>
 
 **DELETE** `/api/user/messages/groups/{groupId}/members` - Remove member from group
 - Required: `userId` (as query parameter)
+
+### Cart Management
+
+**GET** `/api/user/cart` - Get user's cart items with totals
+- Returns: cart items with deal details, total count, total amount
+
+**POST** `/api/user/cart` - Add deal to cart
+- Required: `dealId`
+- Optional: `note` (additional notes for the cart item)
+
+**PUT** `/api/user/cart/{itemId}` - Update cart item
+- Optional: `note` (update notes for the cart item)
+
+**DELETE** `/api/user/cart/{itemId}` - Remove item from cart
+- Removes the specified cart item
+
+### Notification Settings
+
+**GET** `/api/user/notifications/settings` - Get notification preferences
+- Returns: all notification settings (email, push, SMS, marketing, etc.)
+
+**PUT** `/api/user/notifications/settings` - Update notification preferences
+- Optional: `emailNotifications`, `pushNotifications`, `smsNotifications`
+- Optional: `marketingEmails`, `dealAlerts`, `priceDropAlerts`, `groupInvitations`
+- Optional: `orderUpdates`, `newMessages`, `weeklyDeals`, `flashSales`
+- Optional: `reviewReminders`, `accountSecurity`
 
 ---
 
@@ -172,5 +210,64 @@ interface ChatGroupMember {
   id: string;
   chatGroupId: string;
   userId: string;
+}
+
+interface Cart {
+  id: string;
+  userId: string;
+  dealId: string;
+  note?: string;
+  createdAt: string;
+  deal: {
+    id: string;
+    title: string;
+    description: string;
+    pricePerPerson: number;
+    discountPrice: number;
+    images: string[];
+    merchant: {
+      id: string;
+      name: string;
+      email: string;
+      picture?: string;
+    };
+  };
+}
+
+interface Language {
+  code: string;
+  name: string;
+  nativeName: string;
+  flag: string;
+  region: string;
+  isDefault: boolean;
+}
+
+interface Country {
+  code: string;
+  name: string;
+  currency?: string;
+  currencySymbol?: string;
+  flag: string;
+  phoneCode: string;
+  region: string;
+  continent: string;
+  isDefault: boolean;
+}
+
+interface NotificationSettings {
+  emailNotifications: boolean;
+  pushNotifications: boolean;
+  smsNotifications: boolean;
+  marketingEmails: boolean;
+  dealAlerts: boolean;
+  priceDropAlerts: boolean;
+  groupInvitations: boolean;
+  orderUpdates: boolean;
+  newMessages: boolean;
+  weeklyDeals: boolean;
+  flashSales: boolean;
+  reviewReminders: boolean;
+  accountSecurity: boolean;
 }
 ```
