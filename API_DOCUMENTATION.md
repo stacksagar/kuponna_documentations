@@ -35,6 +35,27 @@ Authorization: Bearer <your-token>
 
 **GET** `/api/deals?id={id}` - Get single deal
 
+**GET** `/api/deals/featured` - Get featured deals only
+- `status`: deal status (default: `active`)
+- `limit`, `offset`: pagination
+
+**GET** `/api/deals/top-weekly` - Get top weekly deals
+- `limit`, `offset`: pagination
+
+**GET** `/api/deals/best-selling` - Get best selling deals
+- `limit`, `offset`: pagination
+
+**GET** `/api/deals/greetings` - Get greeting cards and celebration deals
+- `limit`, `offset`: pagination
+
+**GET** `/api/deals/group-discounts` - Get deals with group discounts
+- `minDiscount`: minimum discount percentage/amount
+- `limit`, `offset`: pagination
+
+**GET** `/api/deals/recommendations` - Get recommended deals
+- `category`: filter by category
+- `limit`, `offset`: pagination
+
 ### Categories
 
 **GET** `/api/categories` - Get all categories
