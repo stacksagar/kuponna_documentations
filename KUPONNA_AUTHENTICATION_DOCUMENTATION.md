@@ -1,6 +1,7 @@
 # Kuponna Authentication API Endpoints
 
 - [POST /api/auth/register](#post-apiauthregister)
+- [POST /api/auth/merchant/register](#post-apiauthmerchantregister) **[Mobile App Flow]**
 - [POST /api/auth/verify-email](#post-apiauthverify-email)
 - [POST /api/auth/resend-verification](#post-apiauthresend-verification)
 - [POST /api/auth/login](#post-apiauthlogin)
@@ -169,6 +170,150 @@ Register a new user account.
     updatedAt: string; // Required, ISO 8601 datetime format
   }
 }
+```
+
+[Back to top](#authentication-api-endpoints)
+
+### POST /api/auth/merchant/register
+
+Register a new merchant account with business profile (Mobile App Flow).
+
+#### Request Body
+
+```typescript
+{
+  // Basic user information
+  name: string;         // Required, min 2 characters, full name
+  email: string;        // Required, valid email format
+  password: string;     // Required, min 8 characters
+  phoneNumber?: string; // Optional, personal phone number
+  
+  // Business information
+  businessName: string;     // Required, min 2 characters
+  businessEmail: string;    // Required, valid email format, must be unique
+  businessPhone: string;    // Required, min 10 characters
+  businessAddress: string;  // Required, min 5 characters
+  businessCategory: string; // Required, min 2 characters
+  category?: string;        // Optional, main category ID from /api/categories/grouping
+  subCategory?: string;     // Optional, sub category ID
+  location?: string;        // Optional, business location
+  
+  // Document uploads (all optional)
+  logo?: string;      // Optional, URL to business logo image
+  license?: string;   // Optional, URL to business license document
+  banner?: string;    // Optional, URL to business banner/cover image
+  fileUrl?: string;   // Optional, URL to additional business documents
+}
+```
+
+#### Response 201 (application/json)
+
+```typescript
+{
+  message: string; // Required, "Merchant registered successfully..."
+  token: string;   // Required, JWT token for immediate login
+  user: {
+    id: string;             // Required, UUID v4 format
+    name: string;           // Required, user's full name
+    email: string;          // Required, valid email format
+    role: string;           // Required, "merchant"
+    phoneNumber?: string;   // Optional, phone number
+    isVerified: boolean;    // Required, false (email verification pending)
+    merchantVerified: boolean; // Required, false (admin approval pending)
+    location?: string;      // Optional, user location
+    category?: string;      // Optional, main category
+    subCategory?: string;   // Optional, sub category
+    createdAt: string;      // Required, ISO 8601 datetime format
+    updatedAt: string;      // Required, ISO 8601 datetime format
+  };
+  merchantProfile: {
+    id: string;           // Required, UUID v4 format
+    businessName: string; // Required, business name
+    status: string;       // Required, "pending" (awaiting admin approval)
+  };
+}
+```
+
+#### Error Responses
+
+```typescript
+// 400 Bad Request - Validation errors
+{
+  error: string;        // Required, error message
+  details?: object[];   // Optional, Zod validation error details
+}
+
+// 400 Bad Request - Duplicate user
+{
+  error: "User already exists"; // User email already registered
+}
+
+// 400 Bad Request - Duplicate business email
+{
+  error: "Business email already registered"; // Business email already in use
+}
+
+// 500 Internal Server Error
+{
+  error: "Internal server error";
+}
+```
+
+#### Mobile App Flow Integration
+
+The merchant registration follows a 7-step mobile app flow:
+
+1. **Step 1**: User fills basic info (name, email, password)
+2. **Step 2**: User selects categories using `/api/categories/grouping`
+3. **Step 3**: User enters business details and phone
+4. **Step 4**: User uploads documents (logo, license, banner)
+5. **Step 5**: Account created with pending status
+6. **Step 6**: Email verification required (code sent automatically)
+7. **Step 7**: Admin approval needed for `merchantVerified: true`
+
+#### Implementation Notes
+
+- Creates both `User` and `MerchantProfile` records in a single transaction
+- Merchant profile status starts as "pending" requiring admin approval
+- Email verification code sent automatically to user's email
+- User receives JWT token and can login immediately
+- Features are limited until both `isVerified` and `merchantVerified` are true
+- Document uploads should be completed before calling this endpoint
+- Business email must be unique across all merchant profiles
+- Uses `/api/categories/grouping` for category selection in mobile UI
+
+#### Usage Example
+
+```typescript
+// Mobile app registration
+const merchantData = {
+  // Basic info (Step 1)
+  name: "John Doe",
+  email: "john@example.com", 
+  password: "securepass123",
+  phoneNumber: "+2348012345678",
+  
+  // Business info (Steps 2-3)
+  businessName: "Doe Electronics",
+  businessEmail: "info@doeelectronics.com",
+  businessPhone: "+2348087654321", 
+  businessAddress: "123 Business St, Lagos",
+  businessCategory: "Electronics",
+  category: "digital-category-uuid",
+  subCategory: "electronics-subcategory-uuid",
+  location: "Lagos, Nigeria",
+  
+  // Documents (Step 4)
+  logo: "https://cdn.example.com/logo.jpg",
+  license: "https://cdn.example.com/license.pdf",
+  banner: "https://cdn.example.com/banner.jpg"
+};
+
+const response = await fetch('/api/auth/merchant/register', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(merchantData)
+});
 ```
 
 [Back to top](#authentication-api-endpoints)
@@ -830,6 +975,7 @@ async function login(credentials: LoginRequest) {
       headers: {
         'Content-Type': 'application/json',
       },
+      },
       body: JSON.stringify(credentials),
     });
 
@@ -871,6 +1017,38 @@ async function refreshToken() {
     console.error('Token refresh failed:', error);
     // Handle logout or re-authentication
   }
+}
+```
+
+## Data Models
+
+### MerchantProfile Interface
+
+```typescript
+interface MerchantProfile {
+  id: string;                    // Required, UUID v4 format
+  userId: string;                // Required, UUID v4 format, foreign key to User
+  firstName: string;             // Required, merchant's first name
+  lastName: string;              // Required, merchant's last name
+  email: string;                 // Required, merchant's personal email
+  phoneNumber?: string;          // Optional, merchant's personal phone
+  businessName: string;          // Required, business name
+  businessEmail: string;         // Required, business email (unique)
+  businessPhone: string;         // Required, business phone number
+  businessAddress: string;       // Required, business address
+  businessCategory: string;      // Required, business category
+  category?: string;             // Optional, main category UUID
+  subCategory?: string;          // Optional, sub category UUID
+  location?: string;             // Optional, business location
+  logo?: string;                 // Optional, URL to business logo
+  license?: string;              // Optional, URL to business license document
+  banner?: string;               // Optional, URL to business banner image
+  fileUrl?: string;              // Optional, URL to additional documents
+  status: "pending" | "approved" | "cancelled" | "rejected"; // Required
+  createdAt: string;             // Required, ISO 8601 datetime format
+  updatedAt: string;             // Required, ISO 8601 datetime format
+  // Relationships
+  user?: User;                   // Optional, associated user object
 }
 ```
 

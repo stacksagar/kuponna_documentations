@@ -62,8 +62,59 @@ Authorization: Bearer <your-token>
 - `withDeals`: `true`, `false`
 - `withDealCount`: `true`, `false`
 - `limit`, `offset`: pagination
+- Returns: categories with parent-child relationships
+- Response includes `parent` and `children` objects for hierarchical structure
 
 **GET** `/api/categories?id={id}` - Get single category
+- Returns: single category with parent-child relationships
+- Includes `parent` object (if category has parent) and `children` array (if category has children)
+
+**GET** `/api/categories/grouping` - Get categories grouped by hierarchy (Mobile optimized)
+- Purpose: Mobile app friendly endpoint for category selection and navigation
+- Returns: Root categories with their children in a structured format
+- Response Structure:
+  ```json
+  {
+    "success": true,
+    "categories": [
+      {
+        "id": "uuid",
+        "name": "Foods",
+        "children": [
+          {
+            "id": "uuid", 
+            "name": "Restaurant"
+          },
+          {
+            "id": "uuid",
+            "name": "Fruits"
+          }
+        ]
+      },
+      {
+        "id": "uuid",
+        "name": "Digital",
+        "children": [
+          {
+            "id": "uuid",
+            "name": "Course"
+          }
+        ]
+      }
+    ]
+  }
+  ```
+- Data Flow Design:
+  1. **Root Categories**: Only parent categories (no `parentId`) are returned as main groups
+  2. **Children Structure**: Each root category includes all its direct children
+  3. **Alphabetical Sorting**: Both root categories and children are sorted alphabetically
+  4. **Empty Children**: Root categories with no children will have empty `children` array
+  5. **Mobile Optimization**: Simplified structure perfect for dropdown menus, category filters, and navigation
+- Use Cases:
+  - Category selection in deal creation forms
+  - Filter menus in deal browsing
+  - Navigation drawers showing category hierarchy
+  - Category-based deal organization
 
 ### App Settings
 
@@ -254,6 +305,44 @@ Authorization: Bearer <your-token>
 - Path Parameters:
   - `id`: notification UUID (required)
 - Returns: `{ success: true }` on success
+
+### User Preferences
+
+**GET** `/api/user/preferences` - Get user preferences
+- Authentication: Required (JWT token)
+- Returns: complete user preferences object
+- Response:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "theme": "dark",
+      "language": "en",
+      "currency": "NGN",
+      "customSetting": "value"
+    },
+    "message": "User preferences retrieved successfully"
+  }
+  ```
+
+**PUT** `/api/user/preferences` - Update user preferences
+- Authentication: Required (JWT token)
+- Request Body: Any valid JSON object with preference key-value pairs
+  ```json
+  {
+    "theme": "dark",
+    "language": "fr",
+    "currency": "USD",
+    "notifications": {
+      "email": true,
+      "push": false
+    },
+    "customPreference": "any value"
+  }
+  ```
+- Note: Merges with existing preferences (preserves existing data)
+- Note: Any JSON structure is accepted - completely flexible
+- Returns: updated complete preferences object
 
 ### Notification Settings
 
@@ -489,7 +578,19 @@ interface User {
 interface Category {
   id: string;
   name: string;
+  parentId?: string;
   dealCount?: number;
+  createdAt: string;
+  updatedAt: string;
+  // Relationship objects
+  parent?: {
+    id: string;
+    name: string;
+  };
+  children?: Array<{
+    id: string;
+    name: string;
+  }>;
 }
 
 interface Review {
