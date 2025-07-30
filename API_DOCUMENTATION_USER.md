@@ -373,6 +373,257 @@ Authorization: Bearer <your-token>
 - Note: Only provided fields will be updated
 - Returns: updated notification settings
 
+### File Upload
+
+### File Upload
+
+**POST** `/api/upload` - Upload files to cloud storage
+- Authentication: Required (JWT token)
+- Content-Type: `multipart/form-data`
+- Request Body:
+  ```
+  file: [File] (required) - The file to upload
+  category: [String] (optional) - File category (defaults to "general")
+  ```
+- File Limitations:
+  - **Maximum Size**: 50MB for all file types
+  - **Supported Types**: All file types supported (images, documents, videos, etc.)
+  - **Auto-Detection**: File type and optimization handled automatically by Cloudinary
+- Technical Details:
+  - Uses direct Cloudinary API for reliable uploads
+  - Automatic endpoint selection based on file type:
+    - Images: `/image/upload` endpoint
+    - Videos: `/video/upload` endpoint  
+    - Documents/Others: `/raw/upload` endpoint
+  - Files are organized in folders: `kuponna/{userRole}/{userId}/{category}/`
+  - Unique filenames generated: `{userId}_{category}_{timestamp}`
+- Returns:
+  ```json
+  {
+    "success": true,
+    "message": "File uploaded successfully",
+    "data": {
+      "id": "string", // Cloudinary public_id
+      "url": "string", // Direct file URL
+      "urls": {
+        "original": "string", // Original file URL
+        "thumbnail": "string|null", // Thumbnail URL (images only) - 300x300px
+        "medium": "string|null" // Medium size URL (images only) - 800x600px
+      },
+      "originalName": "string", // Original filename
+      "size": "number", // File size in bytes
+      "format": "string", // File format (jpg, pdf, mp4, etc.)
+      "width": "number|null", // Width for images/videos
+      "height": "number|null", // Height for images/videos
+      "category": "string", // File category
+      "resourceType": "string", // Cloudinary resource type (image, video, raw)
+      "mimeType": "string", // File MIME type
+      "uploadedAt": "string", // ISO timestamp
+      "uploadedBy": {
+        "userId": "string",
+        "userRole": "string",
+        "userName": "string"
+      },
+      "cloudinary": {
+        "public_id": "string", // Use this for deletions
+        "version": "number",
+        "etag": "string",
+        "folder": "string"
+      }
+    },
+    "meta": {
+      "uploadProgress": 100, // Always 100% when upload completes
+      "processingTime": "string", // Upload processing time
+      "canDelete": true,
+      "canUpdate": "boolean" // Based on user role and category
+    }
+  }
+  ```
+
+**GET** `/api/upload` - Get user's uploaded files
+- Authentication: Required (JWT token)
+- Query Parameters:
+  - `category`: string (optional) - filter by category
+  - `limit`: number (optional) - results per page (max 50, default 20)
+  - `page`: number (optional) - page number (default 1)
+- Returns:
+  ```json
+  {
+    "success": true,
+    "data": {
+      "files": [
+        {
+          "id": "string", // Cloudinary public_id
+          "url": "string", // File URL
+          "originalName": "string", // Original filename
+          "size": "number", // File size in bytes
+          "format": "string", // File format
+          "width": "number|null", // Width for images/videos
+          "height": "number|null", // Height for images/videos
+          "resourceType": "string", // Cloudinary resource type
+          "createdAt": "string", // ISO timestamp
+          "folder": "string", // Cloudinary folder path
+          "category": "string" // File category
+        }
+      ],
+      "pagination": {
+        "page": "number",
+        "limit": "number", 
+        "total": "number",
+        "hasMore": "boolean"
+      }
+    }
+  }
+  ```
+
+**DELETE** `/api/upload` - Delete uploaded file
+- Authentication: Required (JWT token)
+- Request Body:
+  ```json
+  {
+    "publicId": "string" // REQUIRED: Cloudinary public_id from upload response
+  }
+  ```
+- Note: Users can only delete their own files
+- Note: Use the `public_id` from the upload response or file listing
+- Returns:
+  ```json
+  {
+    "success": true,
+    "message": "File deleted successfully",
+    "data": {
+      "publicId": "string",
+      "deletedAt": "string" // ISO timestamp
+    }
+  }
+  ```
+
+#### Mobile Development Examples
+
+**React Native Example:**
+```javascript
+const uploadFile = async (fileUri, authToken, category = 'general') => {
+  const formData = new FormData();
+  formData.append('file', {
+    uri: fileUri,
+    type: 'image/jpeg', // or detect from file
+    name: 'upload.jpg'
+  });
+  formData.append('category', category);
+
+  try {
+    const response = await fetch('https://kuponna.up.railway.app/api/upload', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'multipart/form-data',
+      },
+      body: formData,
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log('Upload successful:', result.data.url);
+      return result.data;
+    } else {
+      throw new Error(result.details);
+    }
+  } catch (error) {
+    console.error('Upload failed:', error);
+    throw error;
+  }
+};
+```
+
+**Android (Kotlin) Example:**
+```kotlin
+fun uploadFile(file: File, authToken: String, category: String = "general") {
+    val requestBody = MultipartBody.Builder()
+        .setType(MultipartBody.FORM)
+        .addFormDataPart("file", file.name, RequestBody.create(MediaType.parse("*/*"), file))
+        .addFormDataPart("category", category)
+        .build()
+
+    val request = Request.Builder()
+        .url("https://kuponna.up.railway.app/api/upload")
+        .header("Authorization", "Bearer $authToken")
+        .post(requestBody)
+        .build()
+
+    client.newCall(request).enqueue(object : Callback {
+        override fun onResponse(call: Call, response: Response) {
+            val responseBody = response.body()?.string()
+            // Handle success response
+        }
+        
+        override fun onFailure(call: Call, e: IOException) {
+            // Handle error
+        }
+    })
+}
+```
+
+**iOS (Swift) Example:**
+```swift
+func uploadFile(fileData: Data, authToken: String, category: String = "general") {
+    guard let url = URL(string: "https://kuponna.up.railway.app/api/upload") else { return }
+    
+    var request = URLRequest(url: url)
+    request.httpMethod = "POST"
+    request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
+    
+    let boundary = UUID().uuidString
+    request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+    
+    var body = Data()
+    body.append("--\(boundary)\n".data(using: .utf8)!)
+    body.append("Content-Disposition: form-data; name=\"file\"; filename=\"upload.jpg\"\n".data(using: .utf8)!)
+    body.append("Content-Type: image/jpeg\n\n".data(using: .utf8)!)
+    body.append(fileData)
+    body.append("\n--\(boundary)\n".data(using: .utf8)!)
+    body.append("Content-Disposition: form-data; name=\"category\"\n\n".data(using: .utf8)!)
+    body.append(category.data(using: .utf8)!)
+    body.append("\n--\(boundary)--\n".data(using: .utf8)!)
+    
+    request.httpBody = body
+    
+    URLSession.shared.dataTask(with: request) { data, response, error in
+        // Handle response
+    }.resume()
+}
+```
+
+**Flutter Example:**
+```dart
+import 'package:http/http.dart' as http;
+import 'dart:io';
+
+Future<Map<String, dynamic>> uploadFile(File file, String authToken, {String category = 'general'}) async {
+  final uri = Uri.parse('https://kuponna.up.railway.app/api/upload');
+  final request = http.MultipartRequest('POST', uri);
+  
+  request.headers['Authorization'] = 'Bearer $authToken';
+  request.fields['category'] = category;
+  request.files.add(await http.MultipartFile.fromPath('file', file.path));
+  
+  try {
+    final response = await request.send();
+    final responseBody = await response.stream.bytesToString();
+    final result = json.decode(responseBody);
+    
+    if (result['success']) {
+      return result['data'];
+    } else {
+      throw Exception(result['details']);
+    }
+  } catch (e) {
+    print('Upload failed: $e');
+    rethrow;
+  }
+}
+```
+
+
 ### Payment Methods
 
 **GET** `/api/user/payment-methods` - Get saved payment methods

@@ -2,6 +2,7 @@
 
 - [POST /api/auth/register](#post-apiauthregister)
 - [POST /api/auth/merchant/register](#post-apiauthmerchantregister) **[Mobile App Flow]**
+- [PUT /api/auth/merchant](#put-apiauthmerchant) **[Mobile/App Only]**
 - [POST /api/auth/verify-email](#post-apiauthverify-email)
 - [POST /api/auth/resend-verification](#post-apiauthresend-verification)
 - [POST /api/auth/login](#post-apiauthlogin)
@@ -315,6 +316,192 @@ const response = await fetch('/api/auth/merchant/register', {
   body: JSON.stringify(merchantData)
 });
 ```
+
+[Back to top](#authentication-api-endpoints)
+
+### PUT /api/auth/merchant
+
+**[Mobile/App Only]** Update merchant profile information (comprehensive update for mobile apps).
+
+#### Request Headers
+
+```typescript
+// For web (browser):
+{
+  Cookie: string; // Required, contains httpOnly JWT token
+}
+// For app/mobile:
+{
+  Authorization: string; // Required, Bearer <JWT token>
+}
+```
+
+#### Request Body
+
+```typescript
+{
+  // Basic user information (all optional)
+  name?: string;        // Min 2 characters, user's full name
+  phoneNumber?: string; // Phone number
+  location?: string;    // User location
+  category?: string;    // Main category ID from /api/categories/grouping
+  subCategory?: string; // Sub category ID
+  
+  // Business information (all optional)
+  businessName?: string;     // Min 2 characters, business name
+  businessEmail?: string;    // Valid email, must be unique across merchants
+  businessPhone?: string;    // Min 10 characters, business phone
+  businessAddress?: string;  // Min 5 characters, business address
+  businessCategory?: string; // Min 2 characters, business category
+  
+  // Document uploads (all optional)
+  logo?: string;    // URL to business logo image
+  license?: string; // URL to business license document
+  banner?: string;  // URL to business banner/cover image
+  fileUrl?: string; // URL to additional business documents
+}
+```
+
+#### Response 200 (application/json)
+
+```typescript
+{
+  message: string; // Required, "Merchant profile updated successfully"
+  user: {
+    id: string;              // Required, UUID v4 format
+    email: string;           // Required, valid email format
+    name: string;            // Required, user's full name
+    role: string;            // Required, always "merchant"
+    phoneNumber?: string;    // Optional, phone number
+    location?: string;       // Optional, user location
+    category?: string;       // Optional, main category
+    subCategory?: string;    // Optional, sub category
+    isVerified: boolean;     // Required, email verification status
+    merchantVerified: boolean; // Required, admin approval status
+    lastLogin: string;       // Required, ISO 8601 datetime format
+    createdAt: string;       // Required, ISO 8601 datetime format
+    updatedAt: string;       // Required, ISO 8601 datetime format
+    // password field is excluded from response
+  },
+  merchantProfile: {
+    id: string;                // Required, UUID v4 format
+    userId: string;            // Required, UUID v4 format
+    firstName: string;         // Required, extracted from name
+    lastName: string;          // Required, extracted from name
+    email: string;             // Required, same as user email
+    phoneNumber?: string;      // Optional, phone number
+    businessName: string;      // Required, business name
+    businessEmail: string;     // Required, business email
+    businessPhone: string;     // Required, business phone
+    businessAddress: string;   // Required, business address
+    businessCategory: string;  // Required, business category
+    category?: string;         // Optional, main category
+    subCategory?: string;      // Optional, sub category
+    location?: string;         // Optional, business location
+    logo?: string;            // Optional, logo URL
+    license?: string;         // Optional, license document URL
+    banner?: string;          // Optional, banner image URL
+    fileUrl?: string;         // Optional, additional documents URL
+    status: string;           // Required, "pending" | "approved" | "cancelled" | "rejected"
+    createdAt: string;        // Required, ISO 8601 datetime format
+    updatedAt: string;        // Required, ISO 8601 datetime format
+  }
+}
+```
+
+#### Error Responses
+
+**401 Unauthorized** - Authentication required or invalid token:
+```typescript
+{
+  error: string; // "Authentication required" | "No token provided" | "Invalid token" | "User not found"
+}
+```
+
+**403 Forbidden** - User is not a merchant:
+```typescript
+{
+  error: "Access denied. Merchant role required";
+}
+```
+
+**404 Not Found** - Merchant profile not found:
+```typescript
+{
+  error: "Merchant profile not found";
+}
+```
+
+**400 Bad Request** - Validation errors or business email conflict:
+```typescript
+{
+  error: string; // "Invalid input data" | "Business email already registered by another merchant"
+  details?: Array<{
+    field: string;    // Field name with error
+    message: string;  // Error message
+  }>
+}
+```
+
+**500 Internal Server Error**:
+```typescript
+{
+  error: "Internal server error";
+}
+```
+
+#### Usage Example
+
+```typescript
+// Mobile app merchant profile update
+const updateMerchantProfile = async (updates: any) => {
+  try {
+    const response = await fetch('/api/auth/merchant', {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: "John Doe Business",
+        businessName: "Doe Enterprises",
+        businessPhone: "+1234567890",
+        businessAddress: "123 Business St, City, State",
+        logo: "https://cdn.example.com/logo.jpg",
+        banner: "https://cdn.example.com/banner.jpg"
+      })
+    });
+
+    const data = await response.json();
+    
+    if (response.ok) {
+      console.log('Profile updated:', data.user, data.merchantProfile);
+      // Update local state with new profile data
+    } else {
+      console.error('Update failed:', data.error);
+      if (data.details) {
+        // Handle validation errors
+        data.details.forEach(detail => {
+          console.error(`${detail.field}: ${detail.message}`);
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Network error:', error);
+  }
+};
+```
+
+#### Key Points for Mobile Developers
+
+- **Flexible Updates**: All fields are optional - only send fields you want to update
+- **Dual Model Updates**: Updates both User and MerchantProfile models automatically
+- **Business Email Uniqueness**: Business email must be unique across all merchants
+- **Name Splitting**: The `name` field is automatically split into `firstName` and `lastName` in merchant profile
+- **Authentication Required**: Must include valid JWT token with merchant role
+- **Status Preservation**: Cannot change merchant profile status (requires admin approval)
+- **Document Management**: All document fields accept URLs to uploaded files
+- **Category Integration**: Use `/api/categories/grouping` endpoint to get valid category options
 
 [Back to top](#authentication-api-endpoints)
 
