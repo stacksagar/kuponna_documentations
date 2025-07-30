@@ -4,6 +4,7 @@
 - [POST /api/auth/verify-email](#post-apiauthverify-email)
 - [POST /api/auth/resend-verification](#post-apiauthresend-verification)
 - [POST /api/auth/login](#post-apiauthlogin)
+- [POST /api/auth/google-login](#post-apiauthgoogle-login) **[Mobile/App Only]**
 - [GET /api/auth/refresh](#post-apiauthrefresh)
 - [POST /api/auth/logout](#post-apiauthlogout)
 - [POST /api/auth/forgot-password](#post-apiauthforgot-password)
@@ -106,6 +107,32 @@ const extendedLoginResponse = await fetch('/api/auth/login', {
 - Password hashing with bcrypt
 - CSRF protection
 - Rate limiting on auth endpoints
+
+### Environment Variables Required
+
+For Google OAuth functionality to work properly, the following environment variables must be configured:
+
+```bash
+# Google OAuth Configuration (Required for /api/auth/google-login)
+NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID=your-web-client-id.apps.googleusercontent.com
+
+# Optional: If you have separate mobile credentials
+GOOGLE_ANDROID_CLIENT_ID=your-android-client-id.apps.googleusercontent.com
+GOOGLE_IOS_CLIENT_ID=your-ios-client-id.apps.googleusercontent.com
+```
+
+**How to get these credentials:**
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create or select a project
+3. Enable Google+ API or Google Identity API
+4. Go to "APIs & Services" → "Credentials"
+5. Create OAuth 2.0 Client IDs for:
+   - **Web application** (required - used by mobile apps too)
+   - **Android** (optional - if you want separate credentials)
+   - **iOS** (optional - if you want separate credentials)
+
+**Important:** Mobile apps should use the **Web Client ID** in their configuration, not separate mobile credentials (unless specifically needed).
 
 ## Authentication Endpoints
 
@@ -249,6 +276,149 @@ Authenticate a user and receive an access token.
   }
 }
 ```
+
+[Back to top](#authentication-api-endpoints)
+
+### POST /api/auth/google-login
+
+**[Mobile/App Only]** Authenticate a user using Google OAuth ID token. This endpoint is specifically designed for mobile and app developers.
+
+#### Request Body
+
+```typescript
+{
+  idToken: string;      // Required, Google ID token from mobile SDK
+  platform?: string;   // Optional, enum: ['android', 'ios']
+  deviceInfo?: {        // Optional, device information for security
+    deviceId?: string;    // Unique device identifier
+    deviceName?: string;  // Device name (e.g., "iPhone 14 Pro")
+    osVersion?: string;   // OS version (e.g., "iOS 16.1" or "Android 13")
+    appVersion?: string;  // App version (e.g., "1.0.0")
+  }
+}
+```
+
+#### Response 200 (application/json)
+
+```typescript
+{
+  success: boolean;     // Required, always true for successful requests
+  message: string;      // Required, success message
+  data: {
+    token: string;      // Required, JWT token for API authentication (30 days expiration)
+    user: {
+      id: string;             // Required, UUID v4 format
+      email: string;          // Required, valid email format
+      name: string;           // Required, user's full name from Google
+      fullName: string;       // Required, same as name (for mobile convenience)
+      role: string;           // Required, always "user" for Google signups
+      phoneNumber?: string;   // Optional, null for new Google users
+      picture?: string;       // Optional, Google profile picture URL 
+      isVerified: true;    // Required, automatically true for Google users 
+      lastLogin: string;      // Required, ISO 8601 datetime format
+      createdAt: string;      // Required, ISO 8601 datetime format
+      updatedAt: string;      // Required, ISO 8601 datetime format
+    },
+    auth: {
+      method: string;         // Required, always "google"
+      action: string;         // Required, "login" or "signup"
+      isNewUser: boolean;     // Required, true if account was just created
+      tokenExpiresIn: string; // Required, always "30d" (30 days)
+      isVerified: boolean;    // Required, verification status
+    },
+    appData: {
+      shouldCompleteProfile: boolean;   // Required, true if profile is incomplete
+      requiresVerification: boolean;    // Required, true if email needs verification
+      availableFeatures: {
+        canCreateDeals: boolean;        // Required, merchant feature availability
+        canJoinGroups: boolean;         // Required, group feature availability
+        canMakePurchases: boolean;      // Required, purchase feature availability
+      }
+    }
+  }
+}
+```
+
+#### Error Responses
+
+**400 Bad Request** - Invalid or expired Google ID token:
+```typescript
+{
+  error: string;        // "Invalid or expired Google ID token"
+  details: string;      // "Please try signing in with Google again"
+}
+```
+
+**400 Bad Request** - Invalid request data:
+```typescript
+{
+  error: string;        // "Invalid request data"
+  details: Array<{
+    field: string;      // Field name with error
+    message: string;    // Error message
+  }>
+}
+```
+
+#### Usage Example
+
+```typescript
+// Mobile app implementation
+const signInWithGoogle = async () => {
+  try {
+    // 1. Get Google ID token from your platform's Google Sign-In SDK
+    const googleIdToken = await getGoogleIdToken(); // Your implementation
+    
+    // 2. Send to Kuponna API
+    const response = await fetch('/api/auth/google-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        idToken: googleIdToken,
+        platform: Platform.OS, // 'android' or 'ios'
+        deviceInfo: {
+          deviceId: await getDeviceId(),
+          deviceName: await getDeviceName(),
+          osVersion: Platform.Version,
+          appVersion: '1.0.0'
+        }
+      })
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      // 3. Store the token securely
+      await secureStorage.setItem('authToken', data.data.token);
+      
+      // 4. Handle based on user status
+      if (data.data.auth.isNewUser) {
+        // Navigate to profile completion or welcome screen
+      } else {
+        // Navigate to main app
+      }
+      
+      // 5. Use token for subsequent API calls
+      const apiResponse = await fetch('/api/protected-endpoint', {
+        headers: {
+          'Authorization': `Bearer ${data.data.token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+  } catch (error) {
+    console.error('Google login failed:', error);
+  }
+};
+```
+
+#### Key Points for Mobile Developers
+
+- **Use Web Client ID** in your mobile app configuration (not platform-specific client IDs)
+- **Send ID Token** (not access token) from Google Sign-In SDK
+- **Store JWT securely** using platform keychain/keystore
+- **Token expires in 30 days** - implement refresh logic or re-authenticate
+- **Use Bearer token** for all subsequent API calls: `Authorization: Bearer ${token}`
 
 [Back to top](#authentication-api-endpoints)
 
