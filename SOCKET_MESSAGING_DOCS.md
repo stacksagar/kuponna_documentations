@@ -114,7 +114,7 @@ This API provides real-time messaging and REST endpoints for both web (Next.js) 
 
 ### Messaging
 
-#### Send Message (One-on-One or Group)
+#### Send Message (Person-to-Person or Person-to-Group)
 - **POST** `/api/messages`
 - **Headers:** `Authorization: Bearer <token>`
 - **Send Data:**
