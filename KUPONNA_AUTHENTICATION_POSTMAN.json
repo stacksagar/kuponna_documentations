@@ -1,0 +1,368 @@
+{
+	"info": {
+		"_postman_id": "786c09ee-7c78-4256-babc-f3dbde038509",
+		"name": "Kuponna APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14579239"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"stacksagar@gmail.com\",\r\n  \"password\": \"pass1234\",\r\n  \"firstName\": \"Sagar\",\r\n  \"lastName\": \"Roy\",\r\n  \"role\": \"user\",\r\n  \"phoneNumber\": \"+8801318616194\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/register",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"code\":\"891947\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/verify-email",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"verify-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Re-send Verification Code",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/resend-verification",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"resend-verification"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stacksagar.code@gmail.com\",\r\n    \"password\": \"pass1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/login",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/refresh",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/logout",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stacksagar.code@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/forgot-password",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"forgot-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Forgot Password - Resend Reset Code",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stacksagar@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/resend-reset-code",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"resend-reset-code"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Reset Token/OTP",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stacksagar.code@gmail.com\",\r\n    \"token\": \"140021\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/verify-reset-token",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"verify-reset-token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password - Set new Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stacksagar.code@gmail.com\",\r\n    \"token\": \"140021\",\r\n    \"newPassword\": \"pass12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/reset-password",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"reset-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change/Update Password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"pass12345\", \r\n    \"newPassword\": \"pass1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/change-password",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"change-password"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Email Code (Alternative)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stacksagar@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/resend-email-code",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"resend-email-code"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Email Code (Alternative)",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"stacksagar@gmail.com\",\r\n    \"code\": \"955894\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{NEXTJS_API}}/auth/verify-email-code",
+							"host": [
+								"{{NEXTJS_API}}"
+							],
+							"path": [
+								"auth",
+								"verify-email-code"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
