@@ -1,0 +1,1341 @@
+{
+  "info": {
+    "_postman_id": "kuponna-unified-apis-2025",
+    "name": "Kuponna APIs",
+    "description": "Complete unified collection of all Kuponna API endpoints including Authentication, User APIs, Merchant APIs, Messaging APIs, and Payment & Deals APIs",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "kuponna-unified-apis"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "Authentication endpoints for user registration, login, password management, and email verification",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"stacksagar3@gmail.com\",\n  \"password\": \"pass1234\",\n  \"name\": \"Sagar\",\n  \"role\": \"user\",\n  \"phoneNumber\": \"+8801318616194\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/register",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"code\": \"891947\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/verify-email",
+              "host": ["{{KUPONNA}}"],
+              "path": ["verify-email"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Re-send Verification Code",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/resend-verification",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "resend-verification"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"stacksagar.code@gmail.com\",\n    \"password\": \"pass1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/login",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/refresh",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "refresh"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/logout",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "logout"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"stacksagar.code@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/forgot-password",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "forgot-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password - Resend Reset Code",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"stacksagar@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/resend-reset-code",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "resend-reset-code"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Reset Token/OTP",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"stacksagar.code@gmail.com\",\n    \"token\": \"140021\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/verify-reset-token",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "verify-reset-token"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password - Set new Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"stacksagar.code@gmail.com\",\n    \"token\": \"140021\",\n    \"newPassword\": \"pass12345\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/reset-password",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "reset-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change/Update Password",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"currentPassword\": \"pass12345\",\n    \"newPassword\": \"pass1234\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/change-password",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "change-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Resend Email Code (Alternative)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"stacksagar@gmail.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/resend-email-code",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "resend-email-code"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Email Code (Alternative)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"stacksagar@gmail.com\",\n    \"code\": \"955894\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/auth/verify-email-code",
+              "host": ["{{KUPONNA}}"],
+              "path": ["auth", "verify-email-code"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "User APIs",
+      "description": "User-facing API endpoints including deals, categories, reviews, cart, and notifications",
+      "item": [
+        {
+          "name": "Public Endpoints",
+          "description": "Public API endpoints that don't require authentication",
+          "item": [
+            {
+              "name": "Deals",
+              "item": [
+                {
+                  "name": "Get All Deals",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/deals?category=&type=&featured=&search=&limit=20&offset=0",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["deals"],
+                      "query": [
+                        {
+                          "key": "category",
+                          "value": "",
+                          "description": "Filter by category name"
+                        },
+                        {
+                          "key": "type",
+                          "value": "",
+                          "description": "Filter by deal type (physical, digital)"
+                        },
+                        {
+                          "key": "featured",
+                          "value": "",
+                          "description": "Filter featured deals (true, false)"
+                        },
+                        {
+                          "key": "search",
+                          "value": "",
+                          "description": "Search text"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20",
+                          "description": "Number of results per page"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0",
+                          "description": "Pagination offset"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "Get Single Deal",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/deals?id={{deal_id}}",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["deals"],
+                      "query": [
+                        {
+                          "key": "id",
+                          "value": "{{deal_id}}",
+                          "description": "Deal UUID"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "Get Featured Deals",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/deals/featured?status=active&limit=10&offset=0",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["deals", "featured"],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "active",
+                          "description": "Deal status (default: active)"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "10"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "Get Top Weekly Deals",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/deals/top-weekly?limit=10&offset=0",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["deals", "top-weekly"],
+                      "query": [
+                        {
+                          "key": "limit",
+                          "value": "10"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "Get Best Selling Deals",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/deals/best-selling?limit=10&offset=0",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["deals", "best-selling"],
+                      "query": [
+                        {
+                          "key": "limit",
+                          "value": "10"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "name": "Categories",
+              "item": [
+                {
+                  "name": "Get All Categories",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/categories?withDeals=true&withDealCount=true&limit=20&offset=0",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["categories"],
+                      "query": [
+                        {
+                          "key": "withDeals",
+                          "value": "true",
+                          "description": "Include deals in response"
+                        },
+                        {
+                          "key": "withDealCount",
+                          "value": "true",
+                          "description": "Include deal count in response"
+                        },
+                        {
+                          "key": "limit",
+                          "value": "20"
+                        },
+                        {
+                          "key": "offset",
+                          "value": "0"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "name": "Get Single Category",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/categories?id={{category_id}}",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["categories"],
+                      "query": [
+                        {
+                          "key": "id",
+                          "value": "{{category_id}}",
+                          "description": "Category UUID"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Authenticated Endpoints",
+          "description": "API endpoints that require JWT authentication",
+          "item": [
+            {
+              "name": "Cart Management",
+              "item": [
+                {
+                  "name": "Get Cart Items",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{jwt_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{KUPONNA}}/user/cart",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["user", "cart"]
+                    }
+                  }
+                },
+                {
+                  "name": "Add Deal to Cart",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{jwt_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n  \"dealId\": \"deal-uuid-here\",\n  \"quantity\": 1,\n  \"selectedOptions\": {\n    \"size\": \"large\",\n    \"color\": \"blue\"\n  }\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{KUPONNA}}/user/cart",
+                      "host": ["{{KUPONNA}}"],
+                      "path": ["user", "cart"]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Merchant APIs",
+      "description": "Merchant-specific API endpoints for business profile and deals management",
+      "item": [
+        {
+          "name": "Business Profile",
+          "description": "Merchant business profile management endpoints",
+          "item": [
+            {
+              "name": "Get Business Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/merchant/business-profile",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["merchant", "business-profile"]
+                },
+                "description": "Get the current merchant's business profile. Requires merchant authentication."
+              }
+            },
+            {
+              "name": "Update Business Profile",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@business.com\",\n  \"phoneNumber\": \"+234800000000\",\n  \"category\": \"Electronics\",\n  \"businessName\": \"Doe Electronics Ltd\",\n  \"businessAddress\": \"123 Business Street, Lagos, Nigeria\",\n  \"businessEmail\": \"contact@doeelectronics.com\",\n  \"businessPhone\": \"+234800000001\",\n  \"businessCategory\": \"Electronics & Gadgets\",\n  \"fileUrl\": \"https://cloudinary.com/business-document.pdf\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/merchant/business-profile",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["merchant", "business-profile"]
+                },
+                "description": "Update merchant's business profile (partial update). Cannot update id, userId, status, createdAt, updatedAt."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deals Management",
+          "description": "Merchant deals creation and management endpoints",
+          "item": [
+            {
+              "name": "List Merchant Deals",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/merchant/deals?id=&status=&type=",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["merchant", "deals"],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "",
+                      "description": "Filter by deal ID"
+                    },
+                    {
+                      "key": "status",
+                      "value": "",
+                      "description": "Filter by status (pending, active, draft, expired)"
+                    },
+                    {
+                      "key": "type",
+                      "value": "",
+                      "description": "Filter by type (physical, digital)"
+                    }
+                  ]
+                },
+                "description": "List all deals created by the merchant. Returns deals with all related groups/members."
+              }
+            },
+            {
+              "name": "Create New Deal",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"title\": \"Amazing Smartphone Deal\",\n  \"pricePerPerson\": 150000,\n  \"discountPrice\": 120000,\n  \"deliveryFee\": 5000,\n  \"discountPercentage\": 20,\n  \"requiredMembers\": 10,\n  \"description\": \"Get the latest smartphone at an incredible discount when we reach 10 people!\",\n  \"redemptionExpired\": \"2025-12-31T23:59:59Z\",\n  \"endDate\": \"2025-09-30T23:59:59Z\",\n  \"images\": [\n    \"https://cloudinary.com/smartphone-1.jpg\",\n    \"https://cloudinary.com/smartphone-2.jpg\"\n  ],\n  \"videoUrl\": \"https://youtube.com/watch?v=example\",\n  \"category\": \"Electronics\",\n  \"tags\": [\"smartphone\", \"electronics\", \"discount\"],\n  \"status\": \"pending\",\n  \"location\": \"Lagos, Nigeria\",\n  \"type\": \"physical\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/merchant/deals",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["merchant", "deals"]
+                },
+                "description": "Create a new deal. Title and type are required fields."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Messaging APIs",
+      "description": "Real-time messaging and chat functionality endpoints",
+      "item": [
+        {
+          "name": "Messaging Authentication",
+          "description": "Authentication endpoints for the messaging API",
+          "item": [
+            {
+              "name": "Login (Messaging)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"your-password\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA_API}}/auth/login",
+                  "host": ["{{KUPONNA_API}}"],
+                  "path": ["auth", "login"]
+                },
+                "description": "Login to get JWT token for messaging API authentication"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Messages",
+          "description": "Message sending and retrieval endpoints",
+          "item": [
+            {
+              "name": "Send Message (Group)",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"chatGroupId\": \"{{chat_group_id}}\",\n  \"content\": \"Hello everyone! How are you doing?\",\n  \"messageType\": \"text\",\n  \"fileUrl\": null,\n  \"readBy\": []\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA_API}}/messages",
+                  "host": ["{{KUPONNA_API}}"],
+                  "path": ["messages"]
+                },
+                "description": "Send a message to a group chat. Returns complete message with sender and group info."
+              }
+            },
+            {
+              "name": "Fetch Messages by Group ID",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA_API}}/messages?chatGroupId={{chat_group_id}}&limit=50&offset=0",
+                  "host": ["{{KUPONNA_API}}"],
+                  "path": ["messages"],
+                  "query": [
+                    {
+                      "key": "chatGroupId",
+                      "value": "{{chat_group_id}}",
+                      "description": "Chat group UUID (required)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                },
+                "description": "Fetch messages for a specific chat group with complete relationship data"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Chat Groups",
+          "description": "Chat group creation and management endpoints",
+          "item": [
+            {
+              "name": "Create Group Chat",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Deal Discussion Group\",\n  \"description\": \"Group chat for discussing smartphone deal\",\n  \"type\": \"group\",\n  \"isOneOnOne\": false,\n  \"orderId\": null,\n  \"members\": [\n    \"user-uuid-1\",\n    \"user-uuid-2\",\n    \"user-uuid-3\"\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA_API}}/messages/groups",
+                  "host": ["{{KUPONNA_API}}"],
+                  "path": ["messages", "groups"]
+                },
+                "description": "Create a new group chat. Creator is automatically added as member."
+              }
+            },
+            {
+              "name": "List User's Groups",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA_API}}/messages/groups?type=&isOneOnOne=&limit=20&offset=0",
+                  "host": ["{{KUPONNA_API}}"],
+                  "path": ["messages", "groups"],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "",
+                      "description": "Filter by type (group, individual)"
+                    },
+                    {
+                      "key": "isOneOnOne",
+                      "value": "",
+                      "description": "Filter one-on-one chats (true, false)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                },
+                "description": "List all chat groups user is a member of with complete relationship data"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Payment & Deals APIs",
+      "description": "Payment processing and deal joining functionality with Paystack integration",
+      "item": [
+        {
+          "name": "Deal Joining & Payment",
+          "description": "Endpoints for joining deals and processing payments",
+          "item": [
+            {
+              "name": "Calculate Deal Total Price",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/{{deal_id}}/calculate-price?deliveryOption=Delivery",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "{{deal_id}}", "calculate-price"],
+                  "query": [
+                    {
+                      "key": "deliveryOption",
+                      "value": "Delivery",
+                      "description": "Delivery option: Delivery, Pickup, or Redemption"
+                    }
+                  ]
+                },
+                "description": "Calculate total price for a deal including delivery fees based on selected delivery option"
+              }
+            },
+            {
+              "name": "Initialize Paystack Payment",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"dealId\": \"{{deal_id}}\",\n  \"amount\": 125000,\n  \"email\": \"user@example.com\",\n  \"deliveryOption\": \"Delivery\",\n  \"metadata\": {\n    \"userId\": \"{{user_id}}\",\n    \"dealId\": \"{{deal_id}}\",\n    \"amount\": 125000,\n    \"deliveryOption\": \"Delivery\",\n    \"redemptionDetails\": null\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/payment/initialize",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["payment", "initialize"]
+                },
+                "description": "Initialize Paystack payment for joining a deal. Returns payment URL and reference."
+              }
+            },
+            {
+              "name": "Join Deal with Delivery",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"dealId\": \"{{deal_id}}\",\n  \"deliveryOption\": \"Delivery\",\n  \"deliveryAddress\": \"123 Main Street, Lagos, Nigeria\",\n  \"phoneNumber\": \"+234800000000\",\n  \"paymentReference\": \"ref_payment_123456\",\n  \"amount\": 125000\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/join",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "join"]
+                },
+                "description": "Join a deal with delivery option. Requires physical address for delivery."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Paystack Webhooks",
+          "description": "Paystack webhook endpoints for payment processing",
+          "item": [
+            {
+              "name": "Paystack Webhook Handler",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-Paystack-Signature",
+                    "value": "{{paystack_signature}}",
+                    "description": "Paystack webhook signature for verification"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"event\": \"charge.success\",\n  \"data\": {\n    \"id\": 1234567890,\n    \"domain\": \"test\",\n    \"status\": \"success\",\n    \"reference\": \"Smartphone_Deal_John_Doe_1690123456789\",\n    \"amount\": 12500000,\n    \"message\": null,\n    \"gateway_response\": \"Successful\",\n    \"paid_at\": \"2025-08-06T10:30:00.000Z\",\n    \"created_at\": \"2025-08-06T10:29:45.000Z\",\n    \"channel\": \"card\",\n    \"currency\": \"NGN\",\n    \"ip_address\": \"192.168.1.1\",\n    \"metadata\": {\n      \"userId\": \"user-uuid-here\",\n      \"dealId\": \"deal-uuid-here\",\n      \"amount\": 125000,\n      \"deliveryOption\": \"Delivery\",\n      \"redemptionDetails\": null\n    },\n    \"customer\": {\n      \"id\": 98765432,\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+2348000000000\"\n    }\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/paystack/webhook",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["paystack", "webhook"]
+                },
+                "description": "Webhook endpoint for Paystack payment notifications. Handles successful payments and creates orders/groups."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Payment Verification",
+          "description": "Endpoints for verifying and checking payment status",
+          "item": [
+            {
+              "name": "Verify Payment Reference",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/payment/verify/{{payment_reference}}",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["payment", "verify", "{{payment_reference}}"]
+                },
+                "description": "Verify a payment using Paystack reference. Checks payment status with Paystack API."
+              }
+            },
+            {
+              "name": "List User Transactions",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/transactions?status=&limit=20&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["transactions"],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "",
+                      "description": "Filter by status (success, pending, failed)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                },
+                "description": "List all transactions for the authenticated user"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-extract JWT token from login response",
+          "if (pm.response && pm.response.json() && pm.response.json().token) {",
+          "    pm.environment.set('jwt_token', pm.response.json().token);",
+          "    console.log('JWT Token extracted and saved:', pm.response.json().token);",
+          "}",
+          "",
+          "// Generate random payment reference for testing",
+          "if (pm.request.body && pm.request.body.raw) {",
+          "    let body = pm.request.body.raw;",
+          "    if (body.includes('{{$randomPaymentRef}}')) {",
+          "        const randomRef = 'test_payment_' + Date.now() + '_' + Math.floor(Math.random() * 1000);",
+          "        pm.environment.set('payment_reference', randomRef);",
+          "        body = body.replace(/{{\\$randomPaymentRef}}/g, randomRef);",
+          "        pm.request.body.update(body);",
+          "    }",
+          "}",
+          "",
+          "// Auto-generate unique references",
+          "pm.environment.set('timestamp', Date.now());",
+          "pm.environment.set('random', Math.floor(Math.random() * 100000));"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Test for successful responses",
+          "pm.test('Status code is successful', function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+          "});",
+          "",
+          "// Test for proper JSON response",
+          "pm.test('Response is JSON', function () {",
+          "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+          "});",
+          "",
+          "// Extract and save JWT token from login response",
+          "if (pm.response.json() && pm.response.json().token) {",
+          "    pm.environment.set('jwt_token', pm.response.json().token);",
+          "    console.log('JWT Token saved:', pm.response.json().token);",
+          "}",
+          "",
+          "// Extract user ID from responses",
+          "if (pm.response.json() && pm.response.json().user && pm.response.json().user.id) {",
+          "    pm.environment.set('user_id', pm.response.json().user.id);",
+          "    console.log('User ID saved:', pm.response.json().user.id);",
+          "}",
+          "",
+          "// Extract payment reference from Paystack initialization",
+          "if (pm.response.json() && pm.response.json().data && pm.response.json().data.reference) {",
+          "    pm.environment.set('payment_reference', pm.response.json().data.reference);",
+          "    console.log('Payment reference saved:', pm.response.json().data.reference);",
+          "}",
+          "",
+          "// Extract order ID from order creation",
+          "if (pm.response.json() && pm.response.json().order && pm.response.json().order.id) {",
+          "    pm.environment.set('order_id', pm.response.json().order.id);",
+          "    console.log('Order ID saved:', pm.response.json().order.id);",
+          "}",
+          "",
+          "// Extract group ID from group creation",
+          "if (pm.response.json() && pm.response.json().group && pm.response.json().group.id) {",
+          "    pm.environment.set('group_id', pm.response.json().group.id);",
+          "    console.log('Group ID saved:', pm.response.json().group.id);",
+          "}",
+          "",
+          "// Extract chat group ID from messaging responses",
+          "if (pm.response.json() && pm.response.json().chatGroup && pm.response.json().chatGroup.id) {",
+          "    pm.environment.set('chat_group_id', pm.response.json().chatGroup.id);",
+          "    console.log('Chat Group ID saved:', pm.response.json().chatGroup.id);",
+          "}",
+          "",
+          "// Extract transaction ID",
+          "if (pm.response.json() && pm.response.json().transaction && pm.response.json().transaction.id) {",
+          "    pm.environment.set('transaction_id', pm.response.json().transaction.id);",
+          "    console.log('Transaction ID saved:', pm.response.json().transaction.id);",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "KUPONNA",
+      "value": "https://kuponna.up.railway.app/api",
+      "type": "string",
+      "description": "Main Kuponna API base URL"
+    },
+    {
+      "key": "KUPONNA_API",
+      "value": "https://kuponna-api.up.railway.app/api",
+      "type": "string",
+      "description": "Kuponna Messaging API base URL"
+    },
+    {
+      "key": "PAYSTACK_PUBLIC_KEY",
+      "value": "pk_test_0372249249bd604218edc3421754ddd8fc46b329",
+      "type": "string",
+      "description": "Paystack public key for payment processing"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string",
+      "description": "JWT authentication token"
+    },
+    {
+      "key": "deal_id",
+      "value": "",
+      "type": "string",
+      "description": "Deal UUID for testing"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string",
+      "description": "User UUID for testing"
+    },
+    {
+      "key": "category_id",
+      "value": "",
+      "type": "string",
+      "description": "Category UUID for testing"
+    },
+    {
+      "key": "chat_group_id",
+      "value": "",
+      "type": "string",
+      "description": "Chat Group UUID for messaging"
+    },
+    {
+      "key": "group_id",
+      "value": "",
+      "type": "string",
+      "description": "Group UUID for testing"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string",
+      "description": "Order UUID for testing"
+    },
+    {
+      "key": "payment_reference",
+      "value": "",
+      "type": "string",
+      "description": "Paystack payment reference"
+    },
+    {
+      "key": "paystack_signature",
+      "value": "",
+      "type": "string",
+      "description": "Paystack webhook signature"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string",
+      "description": "Transaction UUID for testing"
+    },
+    {
+      "key": "item_id",
+      "value": "",
+      "type": "string",
+      "description": "Cart Item UUID for testing"
+    },
+    {
+      "key": "notification_id",
+      "value": "",
+      "type": "string",
+      "description": "Notification UUID for testing"
+    },
+    {
+      "key": "recipient_user_id",
+      "value": "",
+      "type": "string",
+      "description": "Recipient User UUID for messaging"
+    }
+  ]
+}

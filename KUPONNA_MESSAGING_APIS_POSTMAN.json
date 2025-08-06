@@ -1,0 +1,583 @@
+{
+  "info": {
+    "_postman_id": "messaging-apis-collection-2025",
+    "name": "Kuponna Messaging APIs",
+    "description": "Complete collection of Kuponna Messaging API endpoints for real-time messaging and chat functionality",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "kuponna-messaging-apis"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "description": "Authentication endpoints for the messaging API",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"your-password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA_API}}/auth/login",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login to get JWT token for messaging API authentication"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA_API}}/auth/refresh",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Refresh JWT token to extend session"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Messages",
+      "description": "Message sending and retrieval endpoints",
+      "item": [
+        {
+          "name": "Send Message (Group)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chatGroupId\": \"{{chat_group_id}}\",\n  \"content\": \"Hello everyone! How are you doing?\",\n  \"messageType\": \"text\",\n  \"fileUrl\": null,\n  \"readBy\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages"]
+            },
+            "description": "Send a message to a group chat. Returns complete message with sender and group info."
+          }
+        },
+        {
+          "name": "Send Message (One-on-One)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientId\": \"{{recipient_user_id}}\",\n  \"content\": \"Hi! How can I help you today?\",\n  \"messageType\": \"text\",\n  \"fileUrl\": null,\n  \"readBy\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages"]
+            },
+            "description": "Send a one-on-one message. Auto-creates chat group if needed and includes admins."
+          }
+        },
+        {
+          "name": "Send File Message",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"chatGroupId\": \"{{chat_group_id}}\",\n  \"content\": \"Check out this document\",\n  \"messageType\": \"file\",\n  \"fileUrl\": \"https://cloudinary.com/document.pdf\",\n  \"readBy\": []\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages"]
+            },
+            "description": "Send a file message with attachment URL"
+          }
+        },
+        {
+          "name": "Fetch Messages by Group ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages?chatGroupId={{chat_group_id}}&limit=50&offset=0",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages"],
+              "query": [
+                {
+                  "key": "chatGroupId",
+                  "value": "{{chat_group_id}}",
+                  "description": "Chat group UUID"
+                },
+                {
+                  "key": "limit",
+                  "value": "50",
+                  "description": "Number of messages to fetch"
+                },
+                {
+                  "key": "offset",
+                  "value": "0",
+                  "description": "Pagination offset"
+                }
+              ]
+            },
+            "description": "Fetch messages for a specific chat group with complete relationship data"
+          }
+        },
+        {
+          "name": "Fetch Messages by Recipient ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages?recipientId={{recipient_user_id}}&limit=50&offset=0",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages"],
+              "query": [
+                {
+                  "key": "recipientId",
+                  "value": "{{recipient_user_id}}",
+                  "description": "Recipient user UUID for one-on-one chat"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Fetch one-on-one messages with a specific user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Chat Groups",
+      "description": "Chat group creation and management endpoints",
+      "item": [
+        {
+          "name": "Create Group Chat",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Project Discussion\",\n  \"description\": \"Group chat for project collaboration\",\n  \"type\": \"group\",\n  \"members\": [\n    \"user-uuid-1\",\n    \"user-uuid-2\",\n    \"user-uuid-3\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages/groups",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages", "groups"]
+            },
+            "description": "Create a new group chat. Creator is automatically added as member."
+          }
+        },
+        {
+          "name": "Create One-on-One Chat",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Direct Chat\",\n  \"description\": \"One-on-one conversation\",\n  \"type\": \"direct\",\n  \"members\": [\n    \"{{recipient_user_id}}\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages/groups",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages", "groups"]
+            },
+            "description": "Create a one-on-one chat. All admin users are automatically included."
+          }
+        },
+        {
+          "name": "Create Deal-Related Group",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Smartphone Deal Group\",\n  \"description\": \"Group chat for smartphone deal participants\",\n  \"type\": \"deal\",\n  \"orderId\": \"{{order_id}}\",\n  \"members\": [\n    \"user-uuid-1\",\n    \"user-uuid-2\"\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages/groups",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages", "groups"]
+            },
+            "description": "Create a group chat related to a specific deal/order"
+          }
+        },
+        {
+          "name": "List User's Groups (All)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages/groups?includeOneOnOne=true&includeGroupChats=true",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages", "groups"],
+              "query": [
+                {
+                  "key": "includeOneOnOne",
+                  "value": "true",
+                  "description": "Include one-on-one chats (default: true)"
+                },
+                {
+                  "key": "includeGroupChats",
+                  "value": "true",
+                  "description": "Include group chats (default: true)"
+                }
+              ]
+            },
+            "description": "List all chat groups user is a member of with complete relationship data"
+          }
+        },
+        {
+          "name": "List User's Groups (Group Chats Only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages/groups?includeOneOnOne=false&includeGroupChats=true",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages", "groups"],
+              "query": [
+                {
+                  "key": "includeOneOnOne",
+                  "value": "false"
+                },
+                {
+                  "key": "includeGroupChats",
+                  "value": "true"
+                }
+              ]
+            },
+            "description": "List only group chats (exclude one-on-one conversations)"
+          }
+        },
+        {
+          "name": "List User's Groups (One-on-One Only)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA_API}}/messages/groups?includeOneOnOne=true&includeGroupChats=false",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["messages", "groups"],
+              "query": [
+                {
+                  "key": "includeOneOnOne",
+                  "value": "true"
+                },
+                {
+                  "key": "includeGroupChats",
+                  "value": "false"
+                }
+              ]
+            },
+            "description": "List only one-on-one conversations (exclude group chats)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Socket.IO Testing",
+      "description": "WebSocket endpoints and events for real-time messaging",
+      "item": [
+        {
+          "name": "Socket.IO Connection Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA_API}}/socket/info",
+              "host": ["{{KUPONNA_API}}"],
+              "path": ["socket", "info"]
+            },
+            "description": "Get Socket.IO connection information and available events"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Auto-extract JWT token from login response",
+          "pm.test(\"Extract JWT Token\", function () {",
+          "    if (pm.response && pm.response.json() && pm.response.json().token) {",
+          "        pm.environment.set(\"jwt_token\", pm.response.json().token);",
+          "        console.log(\"JWT Token extracted and saved:\", pm.response.json().token);",
+          "    }",
+          "});"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Test for successful responses",
+          "pm.test(\"Status code is successful\", function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+          "});",
+          "",
+          "// Test for proper JSON response",
+          "pm.test(\"Response is JSON\", function () {",
+          "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+          "});",
+          "",
+          "// Extract and save JWT token from login response",
+          "if (pm.response.json() && pm.response.json().token) {",
+          "    pm.environment.set(\"jwt_token\", pm.response.json().token);",
+          "    console.log(\"JWT Token saved:\", pm.response.json().token);",
+          "}",
+          "",
+          "// Extract user ID from responses",
+          "if (pm.response.json() && pm.response.json().user && pm.response.json().user.id) {",
+          "    pm.environment.set(\"user_id\", pm.response.json().user.id);",
+          "    console.log(\"User ID saved:\", pm.response.json().user.id);",
+          "}",
+          "",
+          "// Extract group ID from group creation responses",
+          "if (pm.response.json() && pm.response.json().chatGroup && pm.response.json().chatGroup.id) {",
+          "    pm.environment.set(\"chat_group_id\", pm.response.json().chatGroup.id);",
+          "    console.log(\"Chat Group ID saved:\", pm.response.json().chatGroup.id);",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "KUPONNA_API",
+      "value": "https://kuponna-api.up.railway.app/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "chat_group_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "recipient_user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

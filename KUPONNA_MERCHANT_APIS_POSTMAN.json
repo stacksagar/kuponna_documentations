@@ -1,0 +1,463 @@
+{
+  "info": {
+    "_postman_id": "merchant-apis-collection-2025",
+    "name": "Kuponna Merchant APIs",
+    "description": "Complete collection of Kuponna Merchant API endpoints including business profile, deals management, and order management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "kuponna-merchant-apis"
+  },
+  "item": [
+    {
+      "name": "Business Profile",
+      "description": "Merchant business profile management endpoints",
+      "item": [
+        {
+          "name": "Get Business Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/business-profile",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "business-profile"]
+            },
+            "description": "Get the current merchant's business profile. Requires merchant authentication."
+          }
+        },
+        {
+          "name": "Update Business Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@business.com\",\n  \"phoneNumber\": \"+234800000000\",\n  \"category\": \"Electronics\",\n  \"businessName\": \"Doe Electronics Ltd\",\n  \"businessAddress\": \"123 Business Street, Lagos, Nigeria\",\n  \"businessEmail\": \"contact@doeelectronics.com\",\n  \"businessPhone\": \"+234800000001\",\n  \"businessCategory\": \"Electronics & Gadgets\",\n  \"fileUrl\": \"https://cloudinary.com/business-document.pdf\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/business-profile",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "business-profile"]
+            },
+            "description": "Update merchant's business profile (partial update). Cannot update id, userId, status, createdAt, updatedAt."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Deals Management",
+      "description": "Merchant deals creation and management endpoints",
+      "item": [
+        {
+          "name": "List Merchant Deals",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/deals?id=&status=&type=",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "deals"],
+              "query": [
+                {
+                  "key": "id",
+                  "value": "",
+                  "description": "Filter by deal ID (optional)"
+                },
+                {
+                  "key": "status",
+                  "value": "",
+                  "description": "Filter by deal status: draft, pending, active, completed, cancelled (optional)"
+                },
+                {
+                  "key": "type",
+                  "value": "",
+                  "description": "Filter by deal type: physical, digital (optional)"
+                }
+              ]
+            },
+            "description": "List all deals created by the merchant. Returns deals with all related groups/members."
+          }
+        },
+        {
+          "name": "Create New Deal",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Amazing Smartphone Deal\",\n  \"pricePerPerson\": 150000,\n  \"discountPrice\": 120000,\n  \"deliveryFee\": 5000,\n  \"discountPercentage\": 20,\n  \"requiredMembers\": 10,\n  \"description\": \"Get the latest smartphone at an incredible discount when we reach 10 people!\",\n  \"redemptionExpired\": \"2025-12-31T23:59:59Z\",\n  \"endDate\": \"2025-09-30T23:59:59Z\",\n  \"images\": [\n    \"https://cloudinary.com/smartphone-1.jpg\",\n    \"https://cloudinary.com/smartphone-2.jpg\"\n  ],\n  \"videoUrl\": \"https://youtube.com/watch?v=example\",\n  \"category\": \"Electronics\",\n  \"tags\": [\"smartphone\", \"electronics\", \"discount\"],\n  \"status\": \"pending\",\n  \"location\": \"Lagos, Nigeria\",\n  \"type\": \"physical\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/deals",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "deals"]
+            },
+            "description": "Create a new deal. Title and type are required fields."
+          }
+        },
+        {
+          "name": "Update Existing Deal",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{deal_id}}\",\n  \"title\": \"Updated Smartphone Deal\",\n  \"description\": \"Updated description with better details\",\n  \"pricePerPerson\": 140000,\n  \"requiredMembers\": 15,\n  \"deliveryFee\": 3000,\n  \"discountPercentage\": 25,\n  \"redemptionExpired\": \"2025-12-31T23:59:59Z\",\n  \"endDate\": \"2025-10-31T23:59:59Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/deals",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "deals"]
+            },
+            "description": "Update an existing deal. Can only update deals with status 'draft' or 'pending'. Deal ID is required."
+          }
+        },
+        {
+          "name": "Delete Deal",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"{{deal_id}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/deals",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "deals"]
+            },
+            "description": "Delete a deal by ID. Returns success confirmation."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Order Management",
+      "description": "Merchant order processing and management endpoints",
+      "item": [
+        {
+          "name": "Update Order Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"status\": \"shipped\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/order",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "order"]
+            },
+            "description": "Update order status. Valid statuses: pending, paid, shipped, delivered, cancelled, rejected, refund-requested, refunded, fulfilled"
+          }
+        },
+        {
+          "name": "Update Order Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"payableData\": {\n    \"deliveryAddress\": \"New delivery address\",\n    \"trackingNumber\": \"TN123456789\",\n    \"courierService\": \"DHL Express\",\n    \"estimatedDelivery\": \"2025-08-15T10:00:00Z\",\n    \"files\": [\n      \"https://cloudinary.com/invoice.pdf\",\n      \"https://cloudinary.com/receipt.pdf\"\n    ],\n    \"notes\": \"Package ready for pickup\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/order",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "order"]
+            },
+            "description": "Update order details like delivery info, files, etc. If status is set to 'delivered', a delivery email is sent automatically."
+          }
+        },
+        {
+          "name": "Mark Order as Delivered",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"payableData\": {\n    \"status\": \"delivered\",\n    \"deliveryDate\": \"2025-08-10T14:30:00Z\",\n    \"deliveryNotes\": \"Successfully delivered to customer\",\n    \"deliveryConfirmation\": \"https://cloudinary.com/delivery-proof.jpg\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/order",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "order"]
+            },
+            "description": "Mark order as delivered. This will automatically send a delivery confirmation email to the customer."
+          }
+        },
+        {
+          "name": "Process Refund",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"status\": \"refunded\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/order",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "order"]
+            },
+            "description": "Process refund for an order by updating status to 'refunded'"
+          }
+        },
+        {
+          "name": "Reject Order",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"orderId\": \"{{order_id}}\",\n  \"status\": \"rejected\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/merchant/order",
+              "host": ["{{KUPONNA}}"],
+              "path": ["merchant", "order"]
+            },
+            "description": "Reject an order by updating status to 'rejected'"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "KUPONNA",
+      "value": "https://kuponna.up.railway.app/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deal_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

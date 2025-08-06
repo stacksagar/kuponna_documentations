@@ -1,0 +1,1029 @@
+{
+  "info": {
+    "_postman_id": "user-apis-collection-2025",
+    "name": "Kuponna User APIs",
+    "description": "Complete collection of Kuponna User API endpoints including deals, categories, reviews, cart, notifications, and preferences",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "kuponna-user-apis"
+  },
+  "item": [
+    {
+      "name": "Public Endpoints",
+      "description": "Public API endpoints that don't require authentication",
+      "item": [
+        {
+          "name": "Deals",
+          "item": [
+            {
+              "name": "Get All Deals",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals?category=&type=&featured=&search=&limit=20&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals"],
+                  "query": [
+                    {
+                      "key": "category",
+                      "value": "",
+                      "description": "Filter by category name"
+                    },
+                    {
+                      "key": "type",
+                      "value": "",
+                      "description": "Filter by deal type (physical, digital)"
+                    },
+                    {
+                      "key": "featured",
+                      "value": "",
+                      "description": "Filter featured deals (true, false)"
+                    },
+                    {
+                      "key": "search",
+                      "value": "",
+                      "description": "Search text"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20",
+                      "description": "Number of results per page"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0",
+                      "description": "Pagination offset"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Single Deal",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals?id={{deal_id}}",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals"],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "{{deal_id}}",
+                      "description": "Deal UUID"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Featured Deals",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/featured?status=active&limit=10&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "featured"],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "active",
+                      "description": "Deal status (default: active)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Top Weekly Deals",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/top-weekly?limit=10&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "top-weekly"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Best Selling Deals",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/best-selling?limit=10&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "best-selling"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Greeting Cards & Celebration Deals",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/greetings?limit=10&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "greetings"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Group Discount Deals",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/group-discounts?minDiscount=&limit=10&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "group-discounts"],
+                  "query": [
+                    {
+                      "key": "minDiscount",
+                      "value": "",
+                      "description": "Minimum discount percentage/amount"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Recommended Deals",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/deals/recommendations?category=&limit=10&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["deals", "recommendations"],
+                  "query": [
+                    {
+                      "key": "category",
+                      "value": "",
+                      "description": "Filter by category"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "Get All Categories",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/categories?withDeals=true&withDealCount=true&limit=20&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["categories"],
+                  "query": [
+                    {
+                      "key": "withDeals",
+                      "value": "true",
+                      "description": "Include deals in response"
+                    },
+                    {
+                      "key": "withDealCount",
+                      "value": "true",
+                      "description": "Include deal count in response"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Single Category",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/categories?id={{category_id}}",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["categories"],
+                  "query": [
+                    {
+                      "key": "id",
+                      "value": "{{category_id}}",
+                      "description": "Category UUID"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Categories Grouped by Hierarchy (Mobile)",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/categories/grouping",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["categories", "grouping"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "App Settings",
+          "item": [
+            {
+              "name": "Get Available Languages",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/app/languages?defaultOnly=false&region=",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["app", "languages"],
+                  "query": [
+                    {
+                      "key": "defaultOnly",
+                      "value": "false",
+                      "description": "Get only default language (true, false)"
+                    },
+                    {
+                      "key": "region",
+                      "value": "",
+                      "description": "Filter by region (Africa, America)"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get Available Countries",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/app/countries?defaultOnly=false&withCurrency=true&region=&continent=",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["app", "countries"],
+                  "query": [
+                    {
+                      "key": "defaultOnly",
+                      "value": "false",
+                      "description": "Get only default country"
+                    },
+                    {
+                      "key": "withCurrency",
+                      "value": "true",
+                      "description": "Include currency information"
+                    },
+                    {
+                      "key": "region",
+                      "value": "",
+                      "description": "Filter by region (Africa, America)"
+                    },
+                    {
+                      "key": "continent",
+                      "value": "",
+                      "description": "Filter by continent (North America, South America, Africa)"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Reviews",
+          "item": [
+            {
+              "name": "Get Reviews for Deal",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/reviews?dealId={{deal_id}}&limit=20&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["reviews"],
+                  "query": [
+                    {
+                      "key": "dealId",
+                      "value": "{{deal_id}}",
+                      "description": "Deal UUID (required)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "20"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authenticated Endpoints",
+      "description": "API endpoints that require JWT authentication",
+      "item": [
+        {
+          "name": "Reviews",
+          "item": [
+            {
+              "name": "Create Review",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"dealId\": \"deal-uuid-here\",\n  \"rating\": 5,\n  \"comment\": \"Great deal, highly recommended!\",\n  \"images\": [\"image-url-1\", \"image-url-2\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/reviews",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["reviews"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Messages",
+          "item": [
+            {
+              "name": "Get Messages for Chat",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/messages?chatGroupId={{chat_group_id}}&limit=50&offset=0",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "messages"],
+                  "query": [
+                    {
+                      "key": "chatGroupId",
+                      "value": "{{chat_group_id}}",
+                      "description": "Chat group UUID (required)"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "50"
+                    },
+                    {
+                      "key": "offset",
+                      "value": "0"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Send Message",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"chatGroupId\": \"group-uuid-here\",\n  \"content\": \"Hello everyone!\",\n  \"messageType\": \"text\",\n  \"fileUrl\": null,\n  \"readBy\": []\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/user/messages",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "messages"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Message Groups",
+          "item": [
+            {
+              "name": "Get User's Chat Groups",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/messages/groups",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "messages", "groups"]
+                }
+              }
+            },
+            {
+              "name": "Create Group Chat",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Group Chat Name\",\n  \"description\": \"Group description\",\n  \"type\": \"group\",\n  \"members\": [\"user-uuid-1\", \"user-uuid-2\"]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/user/messages/groups",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "messages", "groups"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Group Members",
+          "item": [
+            {
+              "name": "Add Member to Group",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"userId\": \"user-uuid-to-add\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/user/messages/groups/{{group_id}}/members",
+                  "host": ["{{KUPONNA}}"],
+                  "path": [
+                    "user",
+                    "messages",
+                    "groups",
+                    "{{group_id}}",
+                    "members"
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Remove Member from Group",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/messages/groups/{{group_id}}/members?userId={{user_id}}",
+                  "host": ["{{KUPONNA}}"],
+                  "path": [
+                    "user",
+                    "messages",
+                    "groups",
+                    "{{group_id}}",
+                    "members"
+                  ],
+                  "query": [
+                    {
+                      "key": "userId",
+                      "value": "{{user_id}}",
+                      "description": "UUID of user to remove (required)"
+                    }
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cart Management",
+          "item": [
+            {
+              "name": "Get Cart Items",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/cart",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "cart"]
+                }
+              }
+            },
+            {
+              "name": "Add Deal to Cart",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"dealId\": \"deal-uuid-here\",\n  \"quantity\": 1,\n  \"selectedOptions\": {\n    \"size\": \"large\",\n    \"color\": \"blue\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/user/cart",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "cart"]
+                }
+              }
+            },
+            {
+              "name": "Update Cart Item",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"quantity\": 2,\n  \"selectedOptions\": {\n    \"size\": \"medium\",\n    \"color\": \"red\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/user/cart/{{item_id}}",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "cart", "{{item_id}}"]
+                }
+              }
+            },
+            {
+              "name": "Remove Item from Cart",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/cart/{{item_id}}",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "cart", "{{item_id}}"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Notifications",
+          "item": [
+            {
+              "name": "Register Device for Push Notifications",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"deviceToken\": \"firebase-device-token-here\",\n  \"platform\": \"android\",\n  \"deviceInfo\": {\n    \"model\": \"Samsung Galaxy S21\",\n    \"os\": \"Android 12\"\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/user/device-token",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "device-token"]
+                }
+              }
+            },
+            {
+              "name": "Get User Notifications",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/notifications",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "notifications"]
+                }
+              }
+            },
+            {
+              "name": "Mark Notification as Read",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/notifications/{{notification_id}}/read",
+                  "host": ["{{KUPONNA}}"],
+                  "path": [
+                    "user",
+                    "notifications",
+                    "{{notification_id}}",
+                    "read"
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "User Preferences",
+          "item": [
+            {
+              "name": "Get User Preferences",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/preferences",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "preferences"]
+                }
+              }
+            },
+            {
+              "name": "Update User Preferences",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"theme\": \"dark\",\n  \"language\": \"en\",\n  \"currency\": \"NGN\",\n  \"notifications\": {\n    \"email\": true,\n    \"push\": true,\n    \"sms\": false\n  },\n  \"privacy\": {\n    \"profileVisibility\": \"public\",\n    \"showOnlineStatus\": true\n  }\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{KUPONNA}}/user/preferences",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "preferences"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Notification Settings",
+          "item": [
+            {
+              "name": "Get Notification Settings",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{jwt_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{KUPONNA}}/user/notifications/settings",
+                  "host": ["{{KUPONNA}}"],
+                  "path": ["user", "notifications", "settings"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "KUPONNA",
+      "value": "https://kuponna.up.railway.app/api",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deal_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "category_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "chat_group_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "group_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "item_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "notification_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

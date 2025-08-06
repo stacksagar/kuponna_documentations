@@ -1,0 +1,656 @@
+{
+  "info": {
+    "_postman_id": "payment-deals-apis-collection-2025",
+    "name": "Kuponna Payment & Deals APIs",
+    "description": "Complete collection of Kuponna Payment and Deal joining API endpoints including Paystack integration, webhooks, and deal management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "kuponna-payment-deals-apis"
+  },
+  "item": [
+    {
+      "name": "Deal Joining & Payment",
+      "description": "Endpoints for joining deals and processing payments",
+      "item": [
+        {
+          "name": "Calculate Deal Total Price",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/deals/{{deal_id}}/calculate-price?deliveryOption=Delivery",
+              "host": ["{{KUPONNA}}"],
+              "path": ["deals", "{{deal_id}}", "calculate-price"],
+              "query": [
+                {
+                  "key": "deliveryOption",
+                  "value": "Delivery",
+                  "description": "Delivery option: Delivery, Pickup, or Redemption"
+                }
+              ]
+            },
+            "description": "Calculate total price for a deal including delivery fees based on selected delivery option"
+          }
+        },
+        {
+          "name": "Initialize Paystack Payment",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"{{deal_id}}\",\n  \"amount\": 125000,\n  \"email\": \"user@example.com\",\n  \"deliveryOption\": \"Delivery\",\n  \"metadata\": {\n    \"userId\": \"{{user_id}}\",\n    \"dealId\": \"{{deal_id}}\",\n    \"amount\": 125000,\n    \"deliveryOption\": \"Delivery\",\n    \"redemptionDetails\": null\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/payment/initialize",
+              "host": ["{{KUPONNA}}"],
+              "path": ["payment", "initialize"]
+            },
+            "description": "Initialize Paystack payment for joining a deal. Returns payment URL and reference."
+          }
+        },
+        {
+          "name": "Join Deal with Delivery",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"{{deal_id}}\",\n  \"deliveryOption\": \"Delivery\",\n  \"deliveryAddress\": \"123 Main Street, Lagos, Nigeria\",\n  \"phoneNumber\": \"+234800000000\",\n  \"paymentReference\": \"ref_payment_123456\",\n  \"amount\": 125000\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/deals/join",
+              "host": ["{{KUPONNA}}"],
+              "path": ["deals", "join"]
+            },
+            "description": "Join a deal with delivery option. Requires physical address for delivery."
+          }
+        },
+        {
+          "name": "Join Deal with Pickup",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"{{deal_id}}\",\n  \"deliveryOption\": \"Pickup\",\n  \"pickupLocation\": \"Merchant Store - 456 Business Ave, Lagos\",\n  \"phoneNumber\": \"+234800000000\",\n  \"paymentReference\": \"ref_payment_123456\",\n  \"amount\": 120000,\n  \"preferredPickupTime\": \"2025-08-15T14:00:00Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/deals/join",
+              "host": ["{{KUPONNA}}"],
+              "path": ["deals", "join"]
+            },
+            "description": "Join a deal with pickup option. No delivery fees, pickup from merchant location."
+          }
+        },
+        {
+          "name": "Join Deal with Redemption",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dealId\": \"{{deal_id}}\",\n  \"deliveryOption\": \"Redemption\",\n  \"paymentReference\": \"ref_payment_123456\",\n  \"amount\": 120000,\n  \"redemptionDetails\": {\n    \"redemptionType\": \"digital_voucher\",\n    \"deliveryMethod\": \"email\",\n    \"additionalInfo\": \"Send voucher code to email\",\n    \"preferredDeliveryTime\": \"immediate\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/deals/join",
+              "host": ["{{KUPONNA}}"],
+              "path": ["deals", "join"]
+            },
+            "description": "Join a deal with digital redemption option. For digital vouchers, codes, etc."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Paystack Webhooks",
+      "description": "Paystack webhook endpoints for payment processing",
+      "item": [
+        {
+          "name": "Paystack Webhook Handler",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-Paystack-Signature",
+                "value": "{{paystack_signature}}",
+                "description": "Paystack webhook signature for verification"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"charge.success\",\n  \"data\": {\n    \"id\": 1234567890,\n    \"domain\": \"test\",\n    \"status\": \"success\",\n    \"reference\": \"Smartphone_Deal_John_Doe_1690123456789\",\n    \"amount\": 12500000,\n    \"message\": null,\n    \"gateway_response\": \"Successful\",\n    \"paid_at\": \"2025-08-06T10:30:00.000Z\",\n    \"created_at\": \"2025-08-06T10:29:45.000Z\",\n    \"channel\": \"card\",\n    \"currency\": \"NGN\",\n    \"ip_address\": \"192.168.1.1\",\n    \"metadata\": {\n      \"userId\": \"user-uuid-here\",\n      \"dealId\": \"deal-uuid-here\",\n      \"amount\": 125000,\n      \"deliveryOption\": \"Delivery\",\n      \"redemptionDetails\": null\n    },\n    \"customer\": {\n      \"id\": 98765432,\n      \"first_name\": \"John\",\n      \"last_name\": \"Doe\",\n      \"email\": \"john.doe@example.com\",\n      \"phone\": \"+2348000000000\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/paystack/webhook",
+              "host": ["{{KUPONNA}}"],
+              "path": ["paystack", "webhook"]
+            },
+            "description": "Webhook endpoint for Paystack payment notifications. Handles successful payments and creates orders/groups."
+          }
+        },
+        {
+          "name": "Test Webhook Locally",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"charge.success\",\n  \"data\": {\n    \"reference\": \"test_payment_reference_123\",\n    \"status\": \"success\",\n    \"amount\": 12500000,\n    \"metadata\": {\n      \"userId\": \"{{user_id}}\",\n      \"dealId\": \"{{deal_id}}\",\n      \"amount\": 125000,\n      \"deliveryOption\": \"Delivery\"\n    },\n    \"customer\": {\n      \"email\": \"test@example.com\"\n    }\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/paystack/webhook/test",
+              "host": ["{{KUPONNA}}"],
+              "path": ["paystack", "webhook", "test"]
+            },
+            "description": "Test endpoint for webhook processing without signature verification (development only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payment Verification",
+      "description": "Endpoints for verifying and checking payment status",
+      "item": [
+        {
+          "name": "Verify Payment Reference",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/payment/verify/{{payment_reference}}",
+              "host": ["{{KUPONNA}}"],
+              "path": ["payment", "verify", "{{payment_reference}}"]
+            },
+            "description": "Verify a payment using Paystack reference. Checks payment status with Paystack API."
+          }
+        },
+        {
+          "name": "Check Transaction Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/transactions/{{transaction_id}}",
+              "host": ["{{KUPONNA}}"],
+              "path": ["transactions", "{{transaction_id}}"]
+            },
+            "description": "Get transaction details and status from the database"
+          }
+        },
+        {
+          "name": "List User Transactions",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/user/transactions?status=success&limit=20&offset=0",
+              "host": ["{{KUPONNA}}"],
+              "path": ["user", "transactions"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "success",
+                  "description": "Filter by transaction status"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "List all transactions for the authenticated user"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Group & Order Management",
+      "description": "Endpoints for managing deal groups and orders after payment",
+      "item": [
+        {
+          "name": "Get Deal Groups",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/deals/{{deal_id}}/groups?status=active",
+              "host": ["{{KUPONNA}}"],
+              "path": ["deals", "{{deal_id}}", "groups"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "Filter groups by status"
+                }
+              ]
+            },
+            "description": "Get all groups for a specific deal"
+          }
+        },
+        {
+          "name": "Get Group Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/groups/{{group_id}}",
+              "host": ["{{KUPONNA}}"],
+              "path": ["groups", "{{group_id}}"]
+            },
+            "description": "Get detailed information about a specific group including members"
+          }
+        },
+        {
+          "name": "Get User's Orders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/user/orders?status=paid&limit=20&offset=0",
+              "host": ["{{KUPONNA}}"],
+              "path": ["user", "orders"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "paid",
+                  "description": "Filter by order status"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "offset",
+                  "value": "0"
+                }
+              ]
+            },
+            "description": "Get all orders for the authenticated user"
+          }
+        },
+        {
+          "name": "Get Order Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{KUPONNA}}/orders/{{order_id}}",
+              "host": ["{{KUPONNA}}"],
+              "path": ["orders", "{{order_id}}"]
+            },
+            "description": "Get detailed information about a specific order"
+          }
+        },
+        {
+          "name": "Update Order Delivery Info",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwt_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"deliveryAddress\": \"Updated delivery address\",\n  \"phoneNumber\": \"+234800000001\",\n  \"specialInstructions\": \"Please call upon arrival\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{KUPONNA}}/orders/{{order_id}}/delivery",
+              "host": ["{{KUPONNA}}"],
+              "path": ["orders", "{{order_id}}", "delivery"]
+            },
+            "description": "Update delivery information for an order"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Paystack Test Cards",
+      "description": "Information about Paystack test cards for development",
+      "item": [
+        {
+          "name": "Test Card - Successful Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"card\": {\n    \"number\": \"4084084084084081\",\n    \"expiry_month\": \"12\",\n    \"expiry_year\": \"2030\",\n    \"cvv\": \"123\"\n  },\n  \"amount\": 12500000,\n  \"email\": \"test@example.com\",\n  \"reference\": \"test_successful_payment_{{$randomInt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.paystack.co/transaction/initialize",
+              "protocol": "https",
+              "host": ["api", "paystack", "co"],
+              "path": ["transaction", "initialize"]
+            },
+            "description": "Test card for successful payments: 4084084084084081"
+          }
+        },
+        {
+          "name": "Test Card - Failed Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"card\": {\n    \"number\": \"4084084084084085\",\n    \"expiry_month\": \"12\",\n    \"expiry_year\": \"2030\",\n    \"cvv\": \"123\"\n  },\n  \"amount\": 12500000,\n  \"email\": \"test@example.com\",\n  \"reference\": \"test_failed_payment_{{$randomInt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "https://api.paystack.co/transaction/initialize",
+              "protocol": "https",
+              "host": ["api", "paystack", "co"],
+              "path": ["transaction", "initialize"]
+            },
+            "description": "Test card for failed payments: 4084084084084085"
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Generate random payment reference for testing",
+          "if (pm.request.body && pm.request.body.raw) {",
+          "    let body = pm.request.body.raw;",
+          "    if (body.includes('{{$randomPaymentRef}}')) {",
+          "        const randomRef = 'test_payment_' + Date.now() + '_' + Math.floor(Math.random() * 1000);",
+          "        pm.environment.set('payment_reference', randomRef);",
+          "        body = body.replace(/{{\\$randomPaymentRef}}/g, randomRef);",
+          "        pm.request.body.update(body);",
+          "    }",
+          "}",
+          "",
+          "// Auto-generate unique references",
+          "pm.environment.set('timestamp', Date.now());",
+          "pm.environment.set('random', Math.floor(Math.random() * 100000));"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Test for successful responses",
+          "pm.test(\"Status code is successful\", function () {",
+          "    pm.expect(pm.response.code).to.be.oneOf([200, 201, 202]);",
+          "});",
+          "",
+          "// Test for proper JSON response",
+          "pm.test(\"Response is JSON\", function () {",
+          "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+          "});",
+          "",
+          "// Extract payment reference from Paystack initialization",
+          "if (pm.response.json() && pm.response.json().data && pm.response.json().data.reference) {",
+          "    pm.environment.set('payment_reference', pm.response.json().data.reference);",
+          "    console.log('Payment reference saved:', pm.response.json().data.reference);",
+          "}",
+          "",
+          "// Extract order ID from order creation",
+          "if (pm.response.json() && pm.response.json().order && pm.response.json().order.id) {",
+          "    pm.environment.set('order_id', pm.response.json().order.id);",
+          "    console.log('Order ID saved:', pm.response.json().order.id);",
+          "}",
+          "",
+          "// Extract group ID from group creation",
+          "if (pm.response.json() && pm.response.json().group && pm.response.json().group.id) {",
+          "    pm.environment.set('group_id', pm.response.json().group.id);",
+          "    console.log('Group ID saved:', pm.response.json().group.id);",
+          "}",
+          "",
+          "// Extract transaction ID",
+          "if (pm.response.json() && pm.response.json().transaction && pm.response.json().transaction.id) {",
+          "    pm.environment.set('transaction_id', pm.response.json().transaction.id);",
+          "    console.log('Transaction ID saved:', pm.response.json().transaction.id);",
+          "}"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "KUPONNA",
+      "value": "https://kuponna.up.railway.app/api",
+      "type": "string"
+    },
+    {
+      "key": "PAYSTACK_PUBLIC_KEY",
+      "value": "pk_test_0372249249bd604218edc3421754ddd8fc46b329",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "deal_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "payment_reference",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "paystack_signature",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "order_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "group_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "transaction_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}

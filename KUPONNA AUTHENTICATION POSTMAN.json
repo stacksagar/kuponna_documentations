@@ -16,7 +16,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n  \"email\": \"stacksagar@gmail.com\",\r\n  \"password\": \"pass1234\",\r\n  \"firstName\": \"Sagar\",\r\n  \"lastName\": \"Roy\",\r\n  \"role\": \"user\",\r\n  \"phoneNumber\": \"+8801318616194\"\r\n}",
+							"raw": "{\r\n  \"email\": \"stacksagar3@gmail.com\",\r\n  \"password\": \"pass1234\",\r\n  \"name\": \"Sagar\", \r\n  \"role\": \"user\",\r\n  \"phoneNumber\": \"+8801318616194\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -24,9 +24,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/register",
+							"raw": "{{KUPONNA}}/auth/register",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -51,9 +51,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/verify-email",
+							"raw": "{{KUPONNA}}/verify-email",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"verify-email"
@@ -77,9 +77,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/resend-verification",
+							"raw": "{{KUPONNA}}/auth/resend-verification",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -104,9 +104,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/login",
+							"raw": "{{KUPONNA}}/auth/login",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -134,9 +134,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/refresh",
+							"raw": "{{KUPONNA}}/auth/refresh",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -161,9 +161,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/logout",
+							"raw": "{{KUPONNA}}/auth/logout",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -188,9 +188,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/forgot-password",
+							"raw": "{{KUPONNA}}/auth/forgot-password",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -215,9 +215,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/resend-reset-code",
+							"raw": "{{KUPONNA}}/auth/resend-reset-code",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -242,9 +242,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/verify-reset-token",
+							"raw": "{{KUPONNA}}/auth/verify-reset-token",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -269,9 +269,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/reset-password",
+							"raw": "{{KUPONNA}}/auth/reset-password",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -296,9 +296,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/change-password",
+							"raw": "{{KUPONNA}}/auth/change-password",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -323,9 +323,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/resend-email-code",
+							"raw": "{{KUPONNA}}/auth/resend-email-code",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
@@ -350,9 +350,9 @@
 							}
 						},
 						"url": {
-							"raw": "{{NEXTJS_API}}/auth/verify-email-code",
+							"raw": "{{KUPONNA}}/auth/verify-email-code",
 							"host": [
-								"{{NEXTJS_API}}"
+								"{{KUPONNA}}"
 							],
 							"path": [
 								"auth",
